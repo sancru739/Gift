@@ -2,8 +2,8 @@ export const MUSIC_CONTENT = {
   title: "Nuestros temas",
   subtitle: "Hermosas canciones que nos recuerdan",
   experienceMessage: [
-    "Antes de continuar...",
-    "Si puedes, ponte tus auriculares.",
+    "Antes de seguir...",
+    "Ponete tus auriculares.",
     "Esta página fue creada para ser vivida junto a nuestra música."
   ],
   playlistUrl: "https://open.spotify.com/playlist/6KQKfEMV63qjtaJ2DlMmcy",
