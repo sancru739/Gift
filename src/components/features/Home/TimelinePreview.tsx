@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 
 export default function TimelinePreview() {
   return (
-    <section className="py-32 px-4 bg-background relative overflow-hidden">
+    <section id="timeline" className="py-32 px-4 bg-background relative overflow-hidden">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-24 space-y-4">
           <motion.h2 

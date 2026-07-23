@@ -8,6 +8,50 @@ export default function Hero() {
   const y = useTransform(scrollY, [0, 1000], [0, 300])
   const opacity = useTransform(scrollY, [0, 500], [1, 0])
 
+  const handleWalkWithMe = () => {
+    const timelineElement = document.getElementById("timeline");
+    if (!timelineElement) return;
+
+    const timelineTop = timelineElement.getBoundingClientRect().top + window.scrollY;
+    
+    window.scrollTo({ top: timelineTop, behavior: "smooth" });
+    
+    setTimeout(() => {
+      const targetY = timelineTop + timelineElement.offsetHeight - window.innerHeight + 100;
+      const duration = 35000; // 35 seconds to scroll slowly
+      let startTime: number | null = null;
+      let animationFrameId: number;
+      let isAutoScrolling = true;
+
+      const stopScroll = () => {
+        isAutoScrolling = false;
+        cancelAnimationFrame(animationFrameId);
+        window.removeEventListener("wheel", stopScroll);
+        window.removeEventListener("touchstart", stopScroll);
+      };
+
+      window.addEventListener("wheel", stopScroll, { passive: true });
+      window.addEventListener("touchstart", stopScroll, { passive: true });
+
+      const animateScroll = (currentTime: number) => {
+        if (!isAutoScrolling) return;
+        if (!startTime) startTime = currentTime;
+        const timeElapsed = currentTime - startTime;
+        const progress = Math.min(timeElapsed / duration, 1);
+        
+        window.scrollTo(0, timelineTop + (targetY - timelineTop) * progress);
+
+        if (timeElapsed < duration) {
+          animationFrameId = requestAnimationFrame(animateScroll);
+        } else {
+          stopScroll();
+        }
+      };
+
+      animationFrameId = requestAnimationFrame(animateScroll);
+    }, 800);
+  };
+
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-background">
       {/* Animated Gradient Background */}
@@ -45,6 +89,7 @@ export default function Hero() {
             transition={{ delay: 0.8, duration: 0.8, ease: "easeOut" }}
           >
             <Button 
+              onClick={handleWalkWithMe}
               className="group relative rounded-full px-10 py-7 bg-foreground text-background hover:bg-foreground overflow-hidden transition-all duration-500 shadow-[0_0_20px_rgba(212,163,115,0.2)] hover:shadow-[0_0_40px_rgba(212,163,115,0.5)] border border-transparent hover:border-primary/30"
             >
               <span className="relative z-10 font-sans tracking-wide group-hover:tracking-[0.15em] transition-all duration-500 ease-out text-sm md:text-base">
