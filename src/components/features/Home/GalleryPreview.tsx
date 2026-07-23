@@ -10,7 +10,7 @@ export default function GalleryPreview() {
         <div className="flex justify-between items-end mb-16">
           <div className="space-y-4">
             <h2 className="text-3xl md:text-4xl font-heading font-light tracking-tight text-foreground">
-              Luz Capturada
+              Nuestras fotos
             </h2>
             <p className="text-muted-foreground text-lg">Fragmentos del tiempo.</p>
           </div>
