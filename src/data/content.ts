@@ -57,7 +57,7 @@ export const SITE_CONTENT = {
   gallery: [
   {
     "id": "img1",
-    "src": "/gallery/Enero/WhatsApp%20Image%202026-07-23%20at%202.50.02%20AM%20(1).jpeg",
+    "src": "/Gift/gallery/Enero/WhatsApp%20Image%202026-07-23%20at%202.50.02%20AM%20(1).jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Enero",
     "caption": "Un hermoso recuerdo de Enero.",
@@ -65,7 +65,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img2",
-    "src": "/gallery/Enero/WhatsApp%20Image%202026-07-23%20at%202.50.02%20AM.jpeg",
+    "src": "/Gift/gallery/Enero/WhatsApp%20Image%202026-07-23%20at%202.50.02%20AM.jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Enero",
     "caption": "Un hermoso recuerdo de Enero.",
@@ -73,7 +73,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img3",
-    "src": "/gallery/Enero/WhatsApp%20Image%202026-07-23%20at%202.50.03%20AM.jpeg",
+    "src": "/Gift/gallery/Enero/WhatsApp%20Image%202026-07-23%20at%202.50.03%20AM.jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Enero",
     "caption": "Un hermoso recuerdo de Enero.",
@@ -81,7 +81,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img4",
-    "src": "/gallery/Enero/WhatsApp%20Image%202026-07-23%20at%202.50.04%20AM.jpeg",
+    "src": "/Gift/gallery/Enero/WhatsApp%20Image%202026-07-23%20at%202.50.04%20AM.jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Enero",
     "caption": "Un hermoso recuerdo de Enero.",
@@ -89,7 +89,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img5",
-    "src": "/gallery/Enero/WhatsApp%20Image%202026-07-23%20at%202.50.05%20AM.jpeg",
+    "src": "/Gift/gallery/Enero/WhatsApp%20Image%202026-07-23%20at%202.50.05%20AM.jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Enero",
     "caption": "Un hermoso recuerdo de Enero.",
@@ -97,7 +97,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img6",
-    "src": "/gallery/Enero/WhatsApp%20Image%202026-07-23%20at%202.50.06%20AM%20(1).jpeg",
+    "src": "/Gift/gallery/Enero/WhatsApp%20Image%202026-07-23%20at%202.50.06%20AM%20(1).jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Enero",
     "caption": "Un hermoso recuerdo de Enero.",
@@ -105,7 +105,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img7",
-    "src": "/gallery/Enero/WhatsApp%20Image%202026-07-23%20at%202.50.06%20AM%20(2).jpeg",
+    "src": "/Gift/gallery/Enero/WhatsApp%20Image%202026-07-23%20at%202.50.06%20AM%20(2).jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Enero",
     "caption": "Un hermoso recuerdo de Enero.",
@@ -113,7 +113,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img8",
-    "src": "/gallery/Enero/WhatsApp%20Image%202026-07-23%20at%202.50.06%20AM%20(3).jpeg",
+    "src": "/Gift/gallery/Enero/WhatsApp%20Image%202026-07-23%20at%202.50.06%20AM%20(3).jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Enero",
     "caption": "Un hermoso recuerdo de Enero.",
@@ -121,7 +121,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img9",
-    "src": "/gallery/Enero/WhatsApp%20Image%202026-07-23%20at%202.50.06%20AM%20(4).jpeg",
+    "src": "/Gift/gallery/Enero/WhatsApp%20Image%202026-07-23%20at%202.50.06%20AM%20(4).jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Enero",
     "caption": "Un hermoso recuerdo de Enero.",
@@ -129,7 +129,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img10",
-    "src": "/gallery/Enero/WhatsApp%20Image%202026-07-23%20at%202.50.06%20AM.jpeg",
+    "src": "/Gift/gallery/Enero/WhatsApp%20Image%202026-07-23%20at%202.50.06%20AM.jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Enero",
     "caption": "Un hermoso recuerdo de Enero.",
@@ -137,7 +137,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img11",
-    "src": "/gallery/Enero/WhatsApp%20Image%202026-07-23%20at%202.50.26%20AM.jpeg",
+    "src": "/Gift/gallery/Enero/WhatsApp%20Image%202026-07-23%20at%202.50.26%20AM.jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Enero",
     "caption": "Un hermoso recuerdo de Enero.",
@@ -145,7 +145,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img12",
-    "src": "/gallery/Abril/WhatsApp%20Image%202026-07-23%20at%202.53.26%20AM%20(1).jpeg",
+    "src": "/Gift/gallery/Abril/WhatsApp%20Image%202026-07-23%20at%202.53.26%20AM%20(1).jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Abril",
     "caption": "Un hermoso recuerdo de Abril.",
@@ -153,7 +153,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img13",
-    "src": "/gallery/Abril/WhatsApp%20Image%202026-07-23%20at%202.53.26%20AM.jpeg",
+    "src": "/Gift/gallery/Abril/WhatsApp%20Image%202026-07-23%20at%202.53.26%20AM.jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Abril",
     "caption": "Un hermoso recuerdo de Abril.",
@@ -161,7 +161,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img14",
-    "src": "/gallery/Abril/WhatsApp%20Image%202026-07-23%20at%202.53.27%20AM%20(1).jpeg",
+    "src": "/Gift/gallery/Abril/WhatsApp%20Image%202026-07-23%20at%202.53.27%20AM%20(1).jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Abril",
     "caption": "Un hermoso recuerdo de Abril.",
@@ -169,7 +169,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img15",
-    "src": "/gallery/Abril/WhatsApp%20Image%202026-07-23%20at%202.53.27%20AM%20(2).jpeg",
+    "src": "/Gift/gallery/Abril/WhatsApp%20Image%202026-07-23%20at%202.53.27%20AM%20(2).jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Abril",
     "caption": "Un hermoso recuerdo de Abril.",
@@ -177,7 +177,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img16",
-    "src": "/gallery/Abril/WhatsApp%20Image%202026-07-23%20at%202.53.27%20AM.jpeg",
+    "src": "/Gift/gallery/Abril/WhatsApp%20Image%202026-07-23%20at%202.53.27%20AM.jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Abril",
     "caption": "Un hermoso recuerdo de Abril.",
@@ -185,7 +185,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img17",
-    "src": "/gallery/Abril/WhatsApp%20Image%202026-07-23%20at%202.53.28%20AM.jpeg",
+    "src": "/Gift/gallery/Abril/WhatsApp%20Image%202026-07-23%20at%202.53.28%20AM.jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Abril",
     "caption": "Un hermoso recuerdo de Abril.",
@@ -193,7 +193,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img18",
-    "src": "/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.25%20AM.jpeg",
+    "src": "/Gift/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.25%20AM.jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Julio",
     "caption": "Un hermoso recuerdo de Julio.",
@@ -201,7 +201,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img19",
-    "src": "/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.26%20AM.jpeg",
+    "src": "/Gift/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.26%20AM.jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Julio",
     "caption": "Un hermoso recuerdo de Julio.",
@@ -209,7 +209,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img20",
-    "src": "/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.27%20AM%20(1).jpeg",
+    "src": "/Gift/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.27%20AM%20(1).jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Julio",
     "caption": "Un hermoso recuerdo de Julio.",
@@ -217,7 +217,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img21",
-    "src": "/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.27%20AM.jpeg",
+    "src": "/Gift/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.27%20AM.jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Julio",
     "caption": "Un hermoso recuerdo de Julio.",
@@ -225,7 +225,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img22",
-    "src": "/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.28%20AM.jpeg",
+    "src": "/Gift/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.28%20AM.jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Julio",
     "caption": "Un hermoso recuerdo de Julio.",
@@ -233,7 +233,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img23",
-    "src": "/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.29%20AM%20(1).jpeg",
+    "src": "/Gift/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.29%20AM%20(1).jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Julio",
     "caption": "Un hermoso recuerdo de Julio.",
@@ -241,7 +241,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img24",
-    "src": "/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.29%20AM.jpeg",
+    "src": "/Gift/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.29%20AM.jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Julio",
     "caption": "Un hermoso recuerdo de Julio.",
@@ -249,7 +249,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img25",
-    "src": "/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.30%20AM%20(1).jpeg",
+    "src": "/Gift/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.30%20AM%20(1).jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Julio",
     "caption": "Un hermoso recuerdo de Julio.",
@@ -257,7 +257,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img26",
-    "src": "/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.30%20AM.jpeg",
+    "src": "/Gift/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.30%20AM.jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Julio",
     "caption": "Un hermoso recuerdo de Julio.",
@@ -265,7 +265,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img27",
-    "src": "/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.31%20AM%20(1).jpeg",
+    "src": "/Gift/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.31%20AM%20(1).jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Julio",
     "caption": "Un hermoso recuerdo de Julio.",
@@ -273,7 +273,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img28",
-    "src": "/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.31%20AM%20(2).jpeg",
+    "src": "/Gift/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.31%20AM%20(2).jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Julio",
     "caption": "Un hermoso recuerdo de Julio.",
@@ -281,7 +281,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img29",
-    "src": "/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.31%20AM.jpeg",
+    "src": "/Gift/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.31%20AM.jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Julio",
     "caption": "Un hermoso recuerdo de Julio.",
@@ -289,7 +289,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img30",
-    "src": "/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.32%20AM%20(1).jpeg",
+    "src": "/Gift/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.32%20AM%20(1).jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Julio",
     "caption": "Un hermoso recuerdo de Julio.",
@@ -297,7 +297,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img31",
-    "src": "/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.32%20AM.jpeg",
+    "src": "/Gift/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.32%20AM.jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Julio",
     "caption": "Un hermoso recuerdo de Julio.",
@@ -305,7 +305,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img32",
-    "src": "/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.33%20AM%20(1).jpeg",
+    "src": "/Gift/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.33%20AM%20(1).jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Julio",
     "caption": "Un hermoso recuerdo de Julio.",
@@ -313,7 +313,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img33",
-    "src": "/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.33%20AM.jpeg",
+    "src": "/Gift/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.33%20AM.jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Julio",
     "caption": "Un hermoso recuerdo de Julio.",
@@ -321,7 +321,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img34",
-    "src": "/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.34%20AM%20(1).jpeg",
+    "src": "/Gift/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.34%20AM%20(1).jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Julio",
     "caption": "Un hermoso recuerdo de Julio.",
@@ -329,7 +329,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img35",
-    "src": "/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.34%20AM%20(2).jpeg",
+    "src": "/Gift/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.34%20AM%20(2).jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Julio",
     "caption": "Un hermoso recuerdo de Julio.",
@@ -337,7 +337,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img36",
-    "src": "/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.34%20AM.jpeg",
+    "src": "/Gift/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.34%20AM.jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Julio",
     "caption": "Un hermoso recuerdo de Julio.",
@@ -345,7 +345,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img37",
-    "src": "/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.35%20AM.jpeg",
+    "src": "/Gift/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.35%20AM.jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Julio",
     "caption": "Un hermoso recuerdo de Julio.",
@@ -353,7 +353,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img38",
-    "src": "/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.36%20AM.jpeg",
+    "src": "/Gift/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.36%20AM.jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Julio",
     "caption": "Un hermoso recuerdo de Julio.",
@@ -361,7 +361,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img39",
-    "src": "/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.37%20AM%20(1).jpeg",
+    "src": "/Gift/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.37%20AM%20(1).jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Julio",
     "caption": "Un hermoso recuerdo de Julio.",
@@ -369,7 +369,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img40",
-    "src": "/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.37%20AM.jpeg",
+    "src": "/Gift/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.37%20AM.jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Julio",
     "caption": "Un hermoso recuerdo de Julio.",
@@ -377,7 +377,7 @@ export const SITE_CONTENT = {
   },
   {
     "id": "img41",
-    "src": "/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.38%20AM.jpeg",
+    "src": "/Gift/gallery/Julio/WhatsApp%20Image%202026-07-23%20at%202.56.38%20AM.jpeg",
     "aspect": "aspect-square",
     "alt": "Recuerdo de Julio",
     "caption": "Un hermoso recuerdo de Julio.",
@@ -498,7 +498,7 @@ Si estás leyendo esto, significa que el tiempo nos ha seguido tratando con cari
     title: "Nosotros",
     artist: "Babasónicos",
     albumCover: "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/9d/6e/47/9d6e4712-bc1f-fbe3-4aff-935e6806ca00/00602517690813.rgb.jpg/600x600bb.jpg",
-    src: "/music/nosotros.m4a",
+    src: "/Gift/music/nosotros.m4a",
   },
   countdown: {
     targetDate: "2026-12-18T00:00:00",
