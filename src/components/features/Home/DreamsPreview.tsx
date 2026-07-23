@@ -25,9 +25,9 @@ export default function DreamsPreview() {
       <div className="max-w-3xl mx-auto">
         <div className="mb-16 space-y-4 text-center md:text-left">
           <h2 className="text-3xl md:text-4xl font-heading font-light tracking-tight text-foreground">
-            Horizontes Compartidos
+            Sueños a cumplir
           </h2>
-          <p className="text-muted-foreground text-lg">Cosas que haremos juntos.</p>
+          <p className="text-muted-foreground text-lg">Todo lo que esperamos vivir</p>
         </div>
 
         <div className="space-y-2">

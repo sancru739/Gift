@@ -24,10 +24,10 @@ export default function Dreams() {
       <div className="max-w-6xl mx-auto w-full">
         <div className="mb-16">
           <h1 className="text-4xl md:text-6xl font-heading font-light tracking-tight text-foreground">
-            Horizontes Compartidos
+            Sueños a cumplir
           </h1>
           <p className="text-muted-foreground text-lg mt-4">
-            Todo lo que esperamos con ansias.
+            Todo lo que esperamos vivir
           </p>
         </div>
 
