@@ -1,0 +1,61 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  
+  --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-heading: "Outfit", "Inter", system-ui, -apple-system, sans-serif;
+  
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+@layer base {
+  :root {
+    --background: #FDFBF7; /* Cream */
+    --foreground: #1C1917; /* Soft Black */
+    --card: #FFFFFF; /* Warm White */
+    --card-foreground: #1C1917;
+    --primary: #D4A373; /* Warm Gold */
+    --primary-foreground: #FFFFFF;
+    --muted: #F5F2EB; /* Beige */
+    --muted-foreground: #78716C; /* Light Gray */
+    --border: #E5E5E5;
+    --radius: 1.5rem; /* Deeply rounded corners (24px) */
+  }
+
+  .dark {
+    --background: #1C1917; /* Soft Black */
+    --foreground: #FDFBF7; /* Cream */
+    --card: #262626;
+    --card-foreground: #FDFBF7;
+    --primary: #D4A373; /* Warm Gold */
+    --primary-foreground: #1C1917;
+    --muted: #2E2E2E;
+    --muted-foreground: #A3A3A3;
+    --border: #333333;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased selection:bg-primary/20 selection:text-primary transition-colors duration-500;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading tracking-tight;
+  }
+}
+
