@@ -18,7 +18,7 @@ export default function Hero() {
     
     setTimeout(() => {
       const targetY = timelineTop + timelineElement.offsetHeight - window.innerHeight + 100;
-      const duration = 35000; // 35 seconds to scroll slowly
+      const duration = 60000; // 60 seconds to scroll very slowly
       let startTime: number | null = null;
       let animationFrameId: number;
       let isAutoScrolling = true;

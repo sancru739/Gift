@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react"
+import { useLocation } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, X } from "lucide-react"
 import { SITE_CONTENT } from "@/data/content"
@@ -18,12 +19,44 @@ export default function MusicWidget() {
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const { music } = SITE_CONTENT
 
-  // Initialize audio volume
+  const location = useLocation()
+  const isMusicPage = location.pathname.includes("/music")
+
+  // Handle fading volume when entering/leaving music page or muting
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = isMuted ? 0 : volume
-    }
-  }, [volume, isMuted])
+    if (!audioRef.current) return
+    
+    const targetVolume = (isMusicPage || isMuted) ? 0 : volume
+    const currentVol = audioRef.current.volume
+    
+    // Smooth fade over 2 seconds
+    const fadeDuration = 2000
+    const steps = 40
+    const intervalTime = fadeDuration / steps
+    const volStep = (targetVolume - currentVol) / steps
+    
+    let step = 0
+    const fade = setInterval(() => {
+      step++
+      if (audioRef.current) {
+        let nextVol = currentVol + (volStep * step)
+        if (nextVol < 0) nextVol = 0
+        if (nextVol > 1) nextVol = 1
+        audioRef.current.volume = nextVol
+      }
+      
+      if (step >= steps) {
+        clearInterval(fade)
+        // If we faded out fully because of music page, pause it so it doesn't play silently forever
+        if (isMusicPage && audioRef.current && isPlaying) {
+          audioRef.current.pause()
+          setIsPlaying(false)
+        }
+      }
+    }, intervalTime)
+
+    return () => clearInterval(fade)
+  }, [isMusicPage, volume, isMuted, isPlaying])
 
   // Save volume to localStorage
   useEffect(() => {
@@ -94,16 +127,20 @@ export default function MusicWidget() {
         onEnded={() => setIsPlaying(false)}
       />
 
-      <div className="fixed bottom-6 right-6 z-50">
-        <motion.div
-          layout
-          initial={{ borderRadius: 32 }}
-          className={cn(
-            "bg-white/70 dark:bg-black/70 backdrop-blur-2xl border border-white/20 dark:border-white/10 shadow-2xl overflow-hidden flex items-center transition-all duration-500",
-            isExpanded ? "w-[calc(100vw-3rem)] sm:w-[340px] rounded-3xl" : "w-16 h-16 rounded-full cursor-pointer hover:scale-105 hover:shadow-[0_0_20px_rgba(212,163,115,0.3)]"
-          )}
-          onClick={() => !isExpanded && setIsExpanded(true)}
-        >
+      <AnimatePresence>
+        {!isMusicPage && (
+          <div className="fixed bottom-6 right-6 z-50">
+            <motion.div
+              layout
+              initial={{ borderRadius: 32, opacity: 0, scale: 0.8, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: 20 }}
+              className={cn(
+                "bg-white/70 dark:bg-black/70 backdrop-blur-2xl border border-white/20 dark:border-white/10 shadow-2xl overflow-hidden flex items-center transition-all duration-500",
+                isExpanded ? "w-[calc(100vw-3rem)] sm:w-[340px] rounded-3xl" : "w-16 h-16 rounded-full cursor-pointer hover:scale-105 hover:shadow-[0_0_20px_rgba(212,163,115,0.3)]"
+              )}
+              onClick={() => !isExpanded && setIsExpanded(true)}
+            >
           <AnimatePresence mode="wait">
             {!isExpanded ? (
               <motion.div
@@ -229,8 +266,10 @@ export default function MusicWidget() {
               </motion.div>
             )}
           </AnimatePresence>
-        </motion.div>
-      </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </>
   )
 }

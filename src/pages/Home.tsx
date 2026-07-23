@@ -3,7 +3,6 @@ import TimelinePreview from "@/components/features/Home/TimelinePreview"
 import GalleryPreview from "@/components/features/Home/GalleryPreview"
 import CountdownSection from "@/components/features/Home/CountdownSection"
 import SecretSection from "@/components/features/Home/SecretSection"
-import MusicWidget from "@/components/features/Music/MusicWidget"
 
 export default function Home() {
   return (
@@ -15,7 +14,6 @@ export default function Home() {
       
       {/* Global Elements */}
       <SecretSection />
-      <MusicWidget />
     </div>
   )
 }

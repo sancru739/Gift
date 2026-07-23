@@ -4,6 +4,7 @@ import { Footer } from "./Footer"
 import { AnimatePresence, motion } from "framer-motion"
 import { useLocation } from "react-router-dom"
 import { EasterEggOverlay } from "./EasterEggOverlay"
+import MusicWidget from "@/components/features/Music/MusicWidget"
 
 export function MainLayout() {
   const location = useLocation()
@@ -26,6 +27,7 @@ export function MainLayout() {
           </motion.div>
         </AnimatePresence>
       </main>
+      <MusicWidget />
       <Footer />
     </div>
   )
