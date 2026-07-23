@@ -10,7 +10,7 @@ function App() {
   const location = useLocation()
 
   return (
-    <Routes location={location} key={location.pathname}>
+    <Routes location={location}>
       <Route path="/" element={<MainLayout />}>
         <Route index element={<Home />} />
         <Route path="gallery" element={<Gallery />} />
