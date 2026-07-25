@@ -46,7 +46,7 @@ export default function UploadModal({ isOpen, onClose, onSuccess }: UploadModalP
       const filePath = `${fileName}`
 
       // Upload file to storage
-      const { error: uploadError, data: uploadData } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('detalles_archivos')
         .upload(filePath, file)
 
