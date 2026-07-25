@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { motion } from "framer-motion"
 import DetailsGallery from "@/components/features/Details/DetailsGallery"
 import UploadModal from "@/components/features/Details/UploadModal"
