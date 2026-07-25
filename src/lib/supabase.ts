@@ -12,3 +12,12 @@ export type Letter = {
   image_url?: string
   created_at: string
 }
+
+export type DetailItem = {
+  id: string
+  title: string
+  description?: string
+  file_url: string
+  file_type: string // e.g., 'image', 'pdf', 'text', 'doc'
+  created_at: string
+}

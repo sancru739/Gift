@@ -3,6 +3,7 @@ import { MainLayout } from "@/components/layout/MainLayout"
 import Home from "@/pages/Home"
 import Gallery from "@/pages/Gallery"
 import Dreams from "@/pages/Dreams"
+import Details from "@/pages/Details"
 import CountdownPage from "@/pages/CountdownPage"
 import MusicPage from "@/pages/MusicPage"
 
@@ -16,6 +17,7 @@ function App() {
         <Route path="gallery" element={<Gallery />} />
         <Route path="music" element={<MusicPage />} />
         <Route path="dreams" element={<Dreams />} />
+        <Route path="detalles" element={<Details />} />
         <Route path="countdown" element={<CountdownPage />} />
       </Route>
     </Routes>

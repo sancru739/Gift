@@ -1,0 +1,134 @@
+import { useState, useEffect } from "react"
+import { motion } from "framer-motion"
+import { FileText, Image as ImageIcon, File, Download } from "lucide-react"
+import { supabase, type DetailItem } from "@/lib/supabase"
+
+export default function DetailsGallery({ refreshTrigger }: { refreshTrigger: number }) {
+  const [items, setItems] = useState<DetailItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function fetchItems() {
+      try {
+        setLoading(true)
+        const { data, error } = await supabase
+          .from("detalles")
+          .select("*")
+          .order("created_at", { ascending: false })
+
+        if (error) throw error
+        setItems(data || [])
+      } catch (err: any) {
+        console.error("Error fetching details:", err)
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchItems()
+  }, [refreshTrigger])
+
+  if (loading) {
+    return (
+      <div className="min-h-[40vh] flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-[40vh] flex items-center justify-center text-muted-foreground text-center px-4">
+        <p>Hubo un problema al cargar los detalles.<br/><span className="text-sm opacity-70">({error})</span></p>
+      </div>
+    )
+  }
+
+  if (items.length === 0) {
+    return (
+      <div className="min-h-[40vh] flex flex-col items-center justify-center text-muted-foreground text-center px-4 space-y-4">
+        <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+          <FileText className="w-8 h-8 opacity-50" />
+        </div>
+        <p className="text-xl font-light">Aún no hay detalles guardados.</p>
+        <p className="text-sm opacity-70">Un espacio para nuestras cartas, documentos y recuerdos especiales.</p>
+      </div>
+    )
+  }
+
+  const getIcon = (type: string) => {
+    if (type === "image") return <ImageIcon className="w-5 h-5" />
+    if (type === "pdf" || type === "doc") return <File className="w-5 h-5" />
+    return <FileText className="w-5 h-5" />
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {items.map((item, index) => (
+        <motion.div
+          key={item.id}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: index * 0.1 }}
+          className="group relative bg-card text-card-foreground rounded-3xl overflow-hidden border border-border shadow-sm hover:shadow-xl transition-all duration-500"
+        >
+          {item.file_type === "image" ? (
+            <div className="aspect-video w-full overflow-hidden bg-muted relative">
+              <img 
+                src={item.file_url} 
+                alt={item.title} 
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <a 
+                  href={item.file_url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/40 transition-colors"
+                >
+                  <Download className="w-5 h-5" />
+                </a>
+              </div>
+            </div>
+          ) : (
+            <div className="aspect-video w-full bg-primary/5 flex flex-col items-center justify-center relative group-hover:bg-primary/10 transition-colors">
+              <div className="w-16 h-16 rounded-full bg-background flex items-center justify-center shadow-sm text-primary mb-4 transition-transform group-hover:scale-110 duration-500">
+                {getIcon(item.file_type)}
+              </div>
+              <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{item.file_type}</span>
+              
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center bg-black/5 backdrop-blur-[2px]">
+                <a 
+                  href={item.file_url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="px-6 py-2 bg-background border border-border rounded-full shadow-md text-sm font-medium hover:bg-muted transition-colors flex items-center gap-2"
+                >
+                  <Download className="w-4 h-4" />
+                  Abrir Archivo
+                </a>
+              </div>
+            </div>
+          )}
+          
+          <div className="p-6">
+            <h3 className="text-xl font-heading font-medium tracking-tight mb-2 line-clamp-1">
+              {item.title}
+            </h3>
+            {item.description && (
+              <p className="text-muted-foreground text-sm line-clamp-2">
+                {item.description}
+              </p>
+            )}
+            <p className="text-xs text-muted-foreground/50 mt-4 font-mono">
+              {new Date(item.created_at).toLocaleDateString()}
+            </p>
+          </div>
+        </motion.div>
+      ))}
+    </div>
+  )
+}

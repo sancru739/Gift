@@ -9,6 +9,7 @@ const NAV_LINKS = [
   { href: "/gallery", label: "Galería" },
   { href: "/music", label: "Música" },
   { href: "/dreams", label: "Sueños" },
+  { href: "/detalles", label: "Detalles" },
   { href: "/countdown", label: "Cuenta Regresiva" },
 ]
 
