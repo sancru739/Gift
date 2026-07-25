@@ -8,26 +8,6 @@ export default function Details() {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
   const [refreshTrigger, setRefreshTrigger] = useState(0)
 
-  // Secret trigger: type "admin"
-  useEffect(() => {
-    let typed = ""
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger if typing in an input or textarea
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
-        return
-      }
-
-      typed += e.key
-      if (typed.length > 5) typed = typed.slice(1)
-      if (typed.toLowerCase() === "admin") {
-        setIsUploadModalOpen(true)
-        typed = ""
-      }
-    }
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [])
-
   const handleUploadSuccess = () => {
     // Increment to trigger a re-fetch in the gallery
     setRefreshTrigger(prev => prev + 1)
@@ -65,10 +45,23 @@ export default function Details() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-lg md:text-xl text-muted-foreground font-light max-w-2xl mx-auto"
+            className="text-lg md:text-xl text-muted-foreground font-light max-w-2xl mx-auto mb-8"
           >
             Cartas, documentos y pequeños grandes tesoros que merecen ser guardados para siempre.
           </motion.p>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          >
+            <button
+              onClick={() => setIsUploadModalOpen(true)}
+              className="px-6 py-3 bg-primary text-primary-foreground font-medium rounded-full shadow-lg hover:shadow-xl hover:bg-primary/90 transition-all active:scale-95"
+            >
+              Subir Archivo
+            </button>
+          </motion.div>
         </div>
       </section>
 
