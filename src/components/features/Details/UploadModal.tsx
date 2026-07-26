@@ -25,9 +25,11 @@ export default function UploadModal({ isOpen, onClose, onSuccess }: UploadModalP
   }
 
   const getFileType = (file: File) => {
-    if (file.type.startsWith("image/")) return "image"
-    if (file.type === "application/pdf") return "pdf"
-    if (file.type.includes("document") || file.type.includes("word") || file.name.endsWith(".docx")) return "doc"
+    const name = file.name.toLowerCase()
+    if (file.type.startsWith("image/") || name.match(/\.(jpg|jpeg|png|gif|webp|heic)$/)) return "image"
+    if (file.type === "application/pdf" || name.endsWith(".pdf")) return "pdf"
+    if (file.type.includes("document") || file.type.includes("word") || name.match(/\.(doc|docx)$/)) return "doc"
+    if (name.endsWith(".txt")) return "txt"
     return "text"
   }
 

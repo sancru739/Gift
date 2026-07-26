@@ -13,6 +13,10 @@ export default function DetailsGallery({ refreshTrigger }: { refreshTrigger: num
   const [viewerOpen, setViewerOpen] = useState(false)
   const [selectedTextItem, setSelectedTextItem] = useState<{title: string, url: string} | null>(null)
   
+  // States for image viewer
+  const [imageViewerOpen, setImageViewerOpen] = useState(false)
+  const [selectedImageItem, setSelectedImageItem] = useState<{title: string, url: string} | null>(null)
+  
   // State for deleting
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
@@ -110,10 +114,19 @@ export default function DetailsGallery({ refreshTrigger }: { refreshTrigger: num
     setViewerOpen(true)
   }
 
+  const handleOpenImage = (item: DetailItem) => {
+    setSelectedImageItem({ title: item.title, url: item.file_url })
+    setImageViewerOpen(true)
+  }
+
   return (
     <>
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {items.map((item, index) => (
+      {items.map((item, index) => {
+        // Mejoramos la detección de imágenes por si falla el file_type
+        const isImage = item.file_type === "image" || item.file_url.match(/\.(jpg|jpeg|png|gif|webp|heic)($|\?)/i)
+        
+        return (
         <motion.div
           key={item.id}
           initial={{ opacity: 0, y: 20 }}
@@ -121,8 +134,8 @@ export default function DetailsGallery({ refreshTrigger }: { refreshTrigger: num
           transition={{ duration: 0.5, delay: index * 0.1 }}
           className="group relative bg-card text-card-foreground rounded-3xl overflow-hidden border border-border shadow-sm hover:shadow-xl transition-all duration-500"
         >
-          {item.file_type === "image" ? (
-            <div className="aspect-video w-full overflow-hidden bg-muted relative">
+          {isImage ? (
+            <div className="aspect-video w-full overflow-hidden bg-muted relative cursor-pointer" onClick={() => handleOpenImage(item)}>
               <img 
                 src={item.file_url} 
                 alt={item.title} 
@@ -130,14 +143,9 @@ export default function DetailsGallery({ refreshTrigger }: { refreshTrigger: num
                 loading="lazy"
               />
               <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <a 
-                  href={item.file_url} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/40 transition-colors"
-                >
-                  <Download className="w-5 h-5" />
-                </a>
+                <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/40 transition-colors">
+                  <Eye className="w-5 h-5" />
+                </div>
               </div>
             </div>
           ) : (
@@ -199,7 +207,7 @@ export default function DetailsGallery({ refreshTrigger }: { refreshTrigger: num
             </p>
           </div>
         </motion.div>
-      ))}
+      )})}
     </div>
 
     <TextViewerModal
@@ -208,6 +216,27 @@ export default function DetailsGallery({ refreshTrigger }: { refreshTrigger: num
       title={selectedTextItem?.title || ""}
       fileUrl={selectedTextItem?.url || ""}
     />
+
+    {/* Image Viewer Lightbox */}
+    {imageViewerOpen && selectedImageItem && (
+      <div 
+        className="fixed inset-0 z-[150] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+        onClick={() => setImageViewerOpen(false)}
+      >
+        <button 
+          onClick={() => setImageViewerOpen(false)}
+          className="absolute top-6 right-6 p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+        >
+          <X className="w-6 h-6" />
+        </button>
+        <img 
+          src={selectedImageItem.url} 
+          alt={selectedImageItem.title} 
+          className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+          onClick={(e) => e.stopPropagation()}
+        />
+      </div>
+    )}
     </>
   )
 }
