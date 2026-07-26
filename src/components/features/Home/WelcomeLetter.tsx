@@ -62,22 +62,29 @@ export default function WelcomeLetter() {
             <div className="relative z-10 flex flex-col items-center text-center">
               <Heart className="w-8 h-8 text-[#D4A373] mb-8" />
               
-              <h1 className="text-3xl md:text-5xl font-heading font-light tracking-wide text-[#2C2A29] mb-8">
-                Para mi persona favorita
+              <h1 className="text-2xl md:text-4xl font-heading font-light tracking-wide text-[#2C2A29] mb-8 leading-tight">
+                Mi amor, mi pupi,<br/>mi corazón, mi reina.
               </h1>
               
+              {/* Decorative Divider */}
+              <div className="flex items-center justify-center gap-4 w-full mb-8 opacity-50">
+                <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-[#D4A373] to-transparent" />
+                <div className="w-1.5 h-1.5 rounded-full bg-[#D4A373]" />
+                <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-[#D4A373] to-transparent" />
+              </div>
+
               <div className="space-y-6 text-lg font-light leading-relaxed text-[#4A4744] mb-12 max-w-lg">
                 <p>
-                  Hola mi amor,
+                  Quizá es un regalo muy raro, no sé si tan de tu gusto, pero es una mezcla de lo que nos gusta a los dos.
                 </p>
                 <p>
-                  Hice este rincón especial pensando en nosotros. Aquí están nuestras fotos, nuestros recuerdos y todas esas pequeñas cosas que hacen que nuestra historia sea única.
+                  Quise hacer esto para poder tener en un lugar muchas cosas nuestras, recordarnos lo que venimos construyendo juntos y seguir avanzando.
                 </p>
                 <p>
-                  (Puedes editar este texto más tarde dándome las instrucciones).
+                  Espero que te guste y puedas ver todo lo que preparé para vos, cualquier sugerencia es bienvenida.
                 </p>
-                <p className="pt-4 font-heading italic text-xl text-[#D4A373]">
-                  Te amo.
+                <p className="pt-6 font-heading italic text-xl text-[#D4A373]">
+                  Te amo con todo mi corazón, tu pipu.
                 </p>
               </div>
               
