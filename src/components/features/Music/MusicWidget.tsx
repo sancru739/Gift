@@ -63,8 +63,8 @@ export default function MusicWidget() {
     localStorage.setItem("music-volume", volume.toString())
   }, [volume])
 
-  const togglePlay = (e: React.MouseEvent) => {
-    e.stopPropagation()
+  const togglePlay = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation()
     if (!audioRef.current) return
     
     if (isPlaying) {
@@ -74,6 +74,18 @@ export default function MusicWidget() {
     }
     setIsPlaying(!isPlaying)
   }
+
+  // Listen for global play event (e.g. from WelcomeLetter)
+  useEffect(() => {
+    const handleGlobalPlay = () => {
+      if (audioRef.current && !isPlaying) {
+        audioRef.current.play().catch(e => console.log("Audio autoplay prevented", e))
+        setIsPlaying(true)
+      }
+    }
+    window.addEventListener("START_MUSIC", handleGlobalPlay)
+    return () => window.removeEventListener("START_MUSIC", handleGlobalPlay)
+  }, [isPlaying])
 
   const lastUpdateTime = useRef(0)
 

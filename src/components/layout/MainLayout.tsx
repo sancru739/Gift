@@ -5,12 +5,14 @@ import { AnimatePresence, motion } from "framer-motion"
 import { useLocation } from "react-router-dom"
 import { EasterEggOverlay } from "./EasterEggOverlay"
 import MusicWidget from "@/components/features/Music/MusicWidget"
+import WelcomeLetter from "@/components/features/Home/WelcomeLetter"
 
 export function MainLayout() {
   const location = useLocation()
 
   return (
     <div className="relative flex min-h-screen flex-col bg-background text-foreground">
+      <WelcomeLetter />
       <Navbar />
       <EasterEggOverlay />
       <main className="flex-1 flex flex-col">
