@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { FileText, Image as ImageIcon, File, Download, Trash2, Eye } from "lucide-react"
+import { FileText, Image as ImageIcon, File, Download, Trash2, Eye, X } from "lucide-react"
 import { supabase, type DetailItem } from "@/lib/supabase"
 import TextViewerModal from "./TextViewerModal"
 
