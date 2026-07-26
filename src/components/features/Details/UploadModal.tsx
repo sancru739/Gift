@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { X, Upload, File as FileIcon, Image as ImageIcon, Loader2 } from "lucide-react"
 import { supabase } from "@/lib/supabase"
 import { Button } from "@/components/ui/Button"
+import heic2any from "heic2any"
 
 interface UploadModalProps {
   isOpen: boolean
@@ -43,9 +44,25 @@ export default function UploadModal({ isOpen, onClose, onSuccess }: UploadModalP
     setError(null)
 
     try {
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`
-      const filePath = `${fileName}`
+      let fileToUpload = file
+      let fileName = file.name
+      let fileExt = fileName.split('.').pop()?.toLowerCase()
+
+      // Si es HEIC, lo convertimos a JPG para que se pueda ver en cualquier navegador
+      if (fileExt === 'heic' || file.type === 'image/heic') {
+        const convertedBlob = await heic2any({
+          blob: file,
+          toType: "image/jpeg",
+          quality: 0.8
+        }) as Blob
+        
+        fileToUpload = new File([convertedBlob], fileName.replace(/\.heic$/i, '.jpg'), { type: 'image/jpeg' })
+        fileExt = 'jpg'
+        fileName = fileToUpload.name
+      }
+
+      const uniqueFileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`
+      const filePath = `${uniqueFileName}`
 
       // Upload file to storage
       const { error: uploadError } = await supabase.storage
@@ -67,7 +84,7 @@ export default function UploadModal({ isOpen, onClose, onSuccess }: UploadModalP
             title: title.trim(),
             description: description.trim() || null,
             file_url: publicUrl,
-            file_type: getFileType(file)
+            file_type: getFileType(fileToUpload)
           }
         ])
 
