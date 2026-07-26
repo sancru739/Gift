@@ -1,12 +1,20 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { FileText, Image as ImageIcon, File, Download } from "lucide-react"
+import { FileText, Image as ImageIcon, File, Download, Trash2, Eye } from "lucide-react"
 import { supabase, type DetailItem } from "@/lib/supabase"
+import TextViewerModal from "./TextViewerModal"
 
 export default function DetailsGallery({ refreshTrigger }: { refreshTrigger: number }) {
   const [items, setItems] = useState<DetailItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  
+  // States for text viewer
+  const [viewerOpen, setViewerOpen] = useState(false)
+  const [selectedTextItem, setSelectedTextItem] = useState<{title: string, url: string} | null>(null)
+  
+  // State for deleting
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchItems() {
@@ -64,7 +72,46 @@ export default function DetailsGallery({ refreshTrigger }: { refreshTrigger: num
     return <FileText className="w-5 h-5" />
   }
 
+  const handleDelete = async (item: DetailItem) => {
+    if (!window.confirm(`¿Estás seguro de que quieres borrar "${item.title}"?`)) return
+
+    try {
+      setDeletingId(item.id)
+      
+      // 1. Extract file path from URL
+      // The URL format is usually: .../storage/v1/object/public/detalles_archivos/fileName
+      const urlParts = item.file_url.split('/detalles_archivos/')
+      if (urlParts.length === 2) {
+        const filePath = urlParts[1]
+        // Remove from storage bucket
+        await supabase.storage.from('detalles_archivos').remove([filePath])
+      }
+
+      // 2. Remove from database
+      const { error: dbError } = await supabase
+        .from('detalles')
+        .delete()
+        .eq('id', item.id)
+
+      if (dbError) throw dbError
+
+      // 3. Update UI
+      setItems(items.filter(i => i.id !== item.id))
+    } catch (err: any) {
+      console.error("Error al borrar:", err)
+      alert("Hubo un error al borrar el archivo.")
+    } finally {
+      setDeletingId(null)
+    }
+  }
+
+  const handleOpenText = (item: DetailItem) => {
+    setSelectedTextItem({ title: item.title, url: item.file_url })
+    setViewerOpen(true)
+  }
+
   return (
+    <>
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {items.map((item, index) => (
         <motion.div
@@ -101,18 +148,42 @@ export default function DetailsGallery({ refreshTrigger }: { refreshTrigger: num
               <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{item.file_type}</span>
               
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center bg-black/5 backdrop-blur-[2px]">
-                <a 
-                  href={item.file_url} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="px-6 py-2 bg-background border border-border rounded-full shadow-md text-sm font-medium hover:bg-muted transition-colors flex items-center gap-2"
-                >
-                  <Download className="w-4 h-4" />
-                  Abrir Archivo
-                </a>
+                {item.file_type === "txt" ? (
+                  <button 
+                    onClick={() => handleOpenText(item)}
+                    className="px-6 py-2 bg-background border border-border rounded-full shadow-md text-sm font-medium hover:bg-muted transition-colors flex items-center gap-2"
+                  >
+                    <Eye className="w-4 h-4" />
+                    Leer Carta
+                  </button>
+                ) : (
+                  <a 
+                    href={item.file_url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="px-6 py-2 bg-background border border-border rounded-full shadow-md text-sm font-medium hover:bg-muted transition-colors flex items-center gap-2"
+                  >
+                    <Download className="w-4 h-4" />
+                    Abrir Archivo
+                  </a>
+                )}
               </div>
             </div>
           )}
+          
+          {/* Delete Button */}
+          <button
+            onClick={() => handleDelete(item)}
+            disabled={deletingId === item.id}
+            className="absolute top-3 right-3 p-2 bg-red-500/10 text-red-500 rounded-full opacity-0 group-hover:opacity-100 hover:bg-red-500 hover:text-white transition-all disabled:opacity-50"
+            title="Borrar archivo"
+          >
+            {deletingId === item.id ? (
+              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <Trash2 className="w-4 h-4" />
+            )}
+          </button>
           
           <div className="p-6">
             <h3 className="text-xl font-heading font-medium tracking-tight mb-2 line-clamp-1">
@@ -130,5 +201,13 @@ export default function DetailsGallery({ refreshTrigger }: { refreshTrigger: num
         </motion.div>
       ))}
     </div>
+
+    <TextViewerModal
+      isOpen={viewerOpen}
+      onClose={() => setViewerOpen(false)}
+      title={selectedTextItem?.title || ""}
+      fileUrl={selectedTextItem?.url || ""}
+    />
+    </>
   )
 }
