@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { Heart, Menu, X } from "lucide-react"
 import { useState, useEffect } from "react"
+import { giftConfig } from "@/config/gift"
 
-const NAV_LINKS = [
+const BASE_NAV_LINKS = [
   { href: "/", label: "Inicio" },
   { href: "/gallery", label: "Galería" },
   { href: "/music", label: "Música" },
@@ -12,6 +13,10 @@ const NAV_LINKS = [
   { href: "/detalles", label: "Detalles" },
   { href: "/countdown", label: "Cuenta Regresiva" },
 ]
+
+const NAV_LINKS = giftConfig.enabled 
+  ? [...BASE_NAV_LINKS, { href: "/gift", label: "Regalo Especial" }]
+  : BASE_NAV_LINKS
 
 export function Navbar() {
   const [logoClicks, setLogoClicks] = useState(0)
@@ -92,10 +97,10 @@ export function Navbar() {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            initial={{ opacity: 0, y: -20, filter: "blur(10px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: -20, filter: "blur(10px)" }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             className="fixed inset-0 z-[100] bg-background/95 backdrop-blur-xl md:hidden flex flex-col"
           >
             <div className="flex items-center justify-between h-16 px-4 border-b border-border/20">
@@ -124,7 +129,7 @@ export function Navbar() {
                     key={link.href}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.1, duration: 0.4 }}
+                    transition={{ delay: i * 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                   >
                     <Link
                       to={link.href}

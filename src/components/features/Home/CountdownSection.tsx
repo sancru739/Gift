@@ -1,38 +1,11 @@
-import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
+import { useTimePassed } from "@/hooks/useTimePassed"
 
 // Start date: January 11, 2026
 const START_DATE = new Date("2026-01-11T00:00:00")
 
 export default function CountdownSection() {
-  const [timePassed, setTimePassed] = useState(calculateTimePassed())
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimePassed(calculateTimePassed())
-    }, 1000)
-    return () => clearInterval(timer)
-  }, [])
-
-  function calculateTimePassed() {
-    const difference = +new Date() - +START_DATE
-    let passed = {
-      days: 0,
-      hours: 0,
-      minutes: 0,
-      seconds: 0,
-    }
-
-    if (difference > 0) {
-      passed = {
-        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-        minutes: Math.floor((difference / 1000 / 60) % 60),
-        seconds: Math.floor((difference / 1000) % 60),
-      }
-    }
-    return passed
-  }
+  const timePassed = useTimePassed(START_DATE)
 
   return (
     <section className="py-40 bg-background flex flex-col items-center justify-center overflow-hidden">

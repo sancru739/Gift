@@ -2,52 +2,24 @@ import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import confetti from "canvas-confetti"
 import { SITE_CONTENT } from "@/data/content"
-
+import { Countdown } from "@/components/ui/Countdown"
 
 export default function CountdownPage() {
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft())
   const [isZero, setIsZero] = useState(false)
-
   const { motivationalMessage } = SITE_CONTENT.countdown
 
+  // Check immediately on mount if date is already passed
   useEffect(() => {
-    const timer = setInterval(() => {
-      const remaining = calculateTimeLeft()
-      setTimeLeft(remaining)
-
-      if (remaining.total <= 0 && !isZero) {
-        clearInterval(timer)
-        setIsZero(true)
-        fireConfetti()
-      }
-    }, 1000)
-
-    // Check immediately on mount
-    const initial = calculateTimeLeft()
-    if (initial.total <= 0) {
+    const target = new Date(SITE_CONTENT.countdown.targetDate).getTime()
+    if (new Date().getTime() >= target) {
       setIsZero(true)
       fireConfetti()
     }
+  }, [])
 
-    return () => clearInterval(timer)
-  }, [isZero])
-
-  function calculateTimeLeft() {
-    const target = new Date(SITE_CONTENT.countdown.targetDate).getTime()
-    const now = new Date().getTime()
-    const difference = target - now
-
-    if (difference <= 0) {
-      return { total: 0, days: 0, hours: 0, minutes: 0, seconds: 0 }
-    }
-
-    return {
-      total: difference,
-      days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-      hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-      minutes: Math.floor((difference / 1000 / 60) % 60),
-      seconds: Math.floor((difference / 1000) % 60),
-    }
+  const handleComplete = () => {
+    setIsZero(true)
+    fireConfetti()
   }
 
   function fireConfetti() {
@@ -120,18 +92,18 @@ export default function CountdownPage() {
                 </h2>
               </div>
 
-              <div className="flex gap-4 md:gap-12 text-center">
-                <TimeUnit value={timeLeft.days} label="Días" />
-                <TimeUnit value={timeLeft.hours} label="Horas" />
-                <TimeUnit value={timeLeft.minutes} label="Minutos" />
-                <TimeUnit value={timeLeft.seconds} label="Segundos" />
+              <div className="w-full max-w-4xl mx-auto mb-16">
+                <Countdown 
+                  targetDate={SITE_CONTENT.countdown.targetDate}
+                  onComplete={handleComplete}
+                />
               </div>
 
               <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1, duration: 1 }}
-                className="mt-24 max-w-lg text-center"
+                className="mt-12 max-w-lg text-center"
               >
                 <p className="font-heading italic text-2xl text-foreground/80">
                   "{motivationalMessage}"
@@ -142,30 +114,6 @@ export default function CountdownPage() {
         </AnimatePresence>
 
       </div>
-    </div>
-  )
-}
-
-function TimeUnit({ value, label }: { value: number; label: string }) {
-  return (
-    <div className="flex flex-col items-center">
-      <div className="relative overflow-hidden">
-        <AnimatePresence mode="popLayout">
-          <motion.span
-            key={value}
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -50, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="block text-5xl md:text-[8vw] font-sans font-thin tracking-tighter leading-none text-transparent bg-clip-text bg-gradient-to-b from-foreground to-foreground/40"
-          >
-            {String(value).padStart(2, "0")}
-          </motion.span>
-        </AnimatePresence>
-      </div>
-      <span className="text-xs md:text-sm text-muted-foreground mt-6 font-medium tracking-[0.2em] uppercase">
-        {label}
-      </span>
     </div>
   )
 }

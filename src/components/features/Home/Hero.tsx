@@ -125,12 +125,13 @@ function FloatingLights() {
       {lights.map((light) => (
         <motion.div
           key={light.id}
-          className="absolute rounded-full bg-primary/30 blur-[2px]"
+          className="absolute rounded-full bg-primary/30 blur-[2px] will-change-transform"
           style={{
             left: `${light.x}%`,
             top: `${light.y}%`,
             width: light.size,
             height: light.size,
+            transform: "translate3d(0, 0, 0)", // Force GPU acceleration
           }}
           animate={{
             y: ["0%", "-200%"],

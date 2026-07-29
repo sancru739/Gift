@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { FileText, Image as ImageIcon, File, Download, Trash2, Eye, X } from "lucide-react"
 import { supabase, type DetailItem } from "@/lib/supabase"
 import TextViewerModal from "./TextViewerModal"
@@ -218,25 +218,36 @@ export default function DetailsGallery({ refreshTrigger }: { refreshTrigger: num
     />
 
     {/* Image Viewer Lightbox */}
-    {imageViewerOpen && selectedImageItem && (
-      <div 
-        className="fixed inset-0 z-[150] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
-        onClick={() => setImageViewerOpen(false)}
-      >
-        <button 
+    <AnimatePresence>
+      {imageViewerOpen && selectedImageItem && (
+        <motion.div 
+          initial={{ opacity: 0, filter: "blur(10px)" }}
+          animate={{ opacity: 1, filter: "blur(0px)" }}
+          exit={{ opacity: 0, filter: "blur(10px)" }}
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          className="fixed inset-0 z-[150] bg-black/90 backdrop-blur-md flex items-center justify-center p-4"
           onClick={() => setImageViewerOpen(false)}
-          className="absolute top-6 right-6 p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
         >
-          <X className="w-6 h-6" />
-        </button>
-        <img 
-          src={selectedImageItem.url} 
-          alt={selectedImageItem.title} 
-          className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
-          onClick={(e) => e.stopPropagation()}
-        />
-      </div>
-    )}
+          <button 
+            onClick={() => setImageViewerOpen(false)}
+            className="absolute top-6 right-6 p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors z-[160]"
+            aria-label="Close viewer"
+          >
+            <X className="w-6 h-6" />
+          </button>
+          <motion.img 
+            initial={{ scale: 0.95 }}
+            animate={{ scale: 1 }}
+            exit={{ scale: 0.95 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            src={selectedImageItem.url} 
+            alt={selectedImageItem.title} 
+            className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </motion.div>
+      )}
+    </AnimatePresence>
     </>
   )
 }
