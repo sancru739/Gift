@@ -50,13 +50,13 @@ export default function GiftPage() {
               className="mb-12"
             >
               <p className="text-sm md:text-base font-light text-white/50 tracking-widest uppercase mb-4">
-                Para alguien muy especial.
+                Para mi persona favorita
               </p>
               <h1 className="text-4xl md:text-6xl font-light tracking-tight mb-4">
-                Esto es para ti.
+                Esto es para vos.
               </h1>
               <p className="text-lg font-light text-white/60">
-                Espero que esto te haga sonreír.
+                Espero que te guste.
               </p>
             </motion.div>
 

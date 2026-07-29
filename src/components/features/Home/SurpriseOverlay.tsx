@@ -91,7 +91,7 @@ export default function SurpriseOverlay({ giftMode, onComplete }: SurpriseOverla
               transition={{ delay: 0.8, duration: 0.8, ease: "easeOut" }}
               className="text-4xl md:text-5xl font-light tracking-tight text-white/90 mb-4"
             >
-              Tengo una sorpresa para ti.
+              Tengo una sorpresa para vos.
             </motion.h1>
 
             <motion.p
@@ -100,7 +100,7 @@ export default function SurpriseOverlay({ giftMode, onComplete }: SurpriseOverla
               transition={{ delay: 1, duration: 0.8, ease: "easeOut" }}
               className="text-lg md:text-xl font-light text-white/50 mb-12 tracking-wide"
             >
-              He estado esperando para decirte esto.
+              Estoy ansioso por decirte.
             </motion.p>
 
             <motion.button
