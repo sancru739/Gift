@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { giftConfig } from "@/config/gift"
 import { Countdown } from "@/components/ui/Countdown"
