@@ -1,18 +1,39 @@
 import { Routes, Route, useLocation } from "react-router-dom"
-import { lazy, Suspense } from "react"
+import { lazy, Suspense, ComponentType } from "react"
 import { MainLayout } from "@/components/layout/MainLayout"
 import { giftConfig } from "@/config/gift"
 
+// Wrapper to handle chunk load errors (404s after a new deploy) by auto-reloading once
+function lazyWithRetry<T extends ComponentType<any>>(componentImport: () => Promise<{ default: T }>) {
+  return lazy(async () => {
+    const pageHasAlreadyBeenForceRefreshed = JSON.parse(
+      window.sessionStorage.getItem('page-has-been-force-refreshed') || 'false'
+    )
+    try {
+      const component = await componentImport()
+      window.sessionStorage.setItem('page-has-been-force-refreshed', 'false')
+      return component
+    } catch (error) {
+      if (!pageHasAlreadyBeenForceRefreshed) {
+        window.sessionStorage.setItem('page-has-been-force-refreshed', 'true')
+        window.location.reload()
+        return { default: () => null as any }
+      }
+      throw error
+    }
+  })
+}
+
 // Lazy load route components for performance
-const Home = lazy(() => import("@/pages/Home"))
-const Gallery = lazy(() => import("@/pages/Gallery"))
-const Dreams = lazy(() => import("@/pages/Dreams"))
-const Details = lazy(() => import("@/pages/Details"))
-const CountdownPage = lazy(() => import("@/pages/CountdownPage"))
-const MusicPage = lazy(() => import("@/pages/MusicPage"))
-const GiftPage = lazy(() => import("@/pages/GiftPage"))
-const VideoPage = lazy(() => import("@/pages/VideoPage"))
-const RevealPage = lazy(() => import("@/pages/RevealPage"))
+const Home = lazyWithRetry(() => import("@/pages/Home"))
+const Gallery = lazyWithRetry(() => import("@/pages/Gallery"))
+const Dreams = lazyWithRetry(() => import("@/pages/Dreams"))
+const Details = lazyWithRetry(() => import("@/pages/Details"))
+const CountdownPage = lazyWithRetry(() => import("@/pages/CountdownPage"))
+const MusicPage = lazyWithRetry(() => import("@/pages/MusicPage"))
+const GiftPage = lazyWithRetry(() => import("@/pages/GiftPage"))
+const VideoPage = lazyWithRetry(() => import("@/pages/VideoPage"))
+const RevealPage = lazyWithRetry(() => import("@/pages/RevealPage"))
 
 export function App() {
   const location = useLocation()
