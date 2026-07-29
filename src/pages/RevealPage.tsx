@@ -101,17 +101,17 @@ export default function RevealPage() {
             >
               {/* Header */}
               <motion.p variants={itemVariants} className="text-sm md:text-base font-light text-[#d4a373]/80 tracking-widest uppercase mb-4">
-                I couldn't wait any longer.
+                No podía esperar más.
               </motion.p>
               
               <motion.h1 variants={itemVariants} className="text-4xl md:text-5xl lg:text-6xl font-light tracking-tight text-white/90 mb-8">
-                We're going to see each other again.
+                Nos vamos a volver a ver.
               </motion.h1>
 
               {/* Date Highlight */}
               <motion.div variants={itemVariants} className="mb-12">
                 <span className="px-8 py-3 rounded-full border border-[#d4a373]/30 bg-[#d4a373]/10 text-xl md:text-2xl font-light tracking-widest text-[#d4a373]">
-                  October 9, 2026
+                  9 de Octubre, 2026
                 </span>
               </motion.div>
 
@@ -122,7 +122,7 @@ export default function RevealPage() {
 
               {/* Emotional Text */}
               <motion.p variants={itemVariants} className="text-lg md:text-xl font-light text-white/60 tracking-wide mb-12 max-w-lg">
-                "Every second that passes is one less until I can hug you again."
+                "Cada segundo que pasa es uno menos para volver a abrazarte."
               </motion.p>
 
               {/* Action Button */}
@@ -135,7 +135,7 @@ export default function RevealPage() {
               >
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-transparent via-white/10 to-transparent blur-md" />
                 <span className="relative z-10 text-white font-medium tracking-widest uppercase text-sm">
-                  Continue
+                  Continuar
                 </span>
               </motion.button>
             </motion.div>

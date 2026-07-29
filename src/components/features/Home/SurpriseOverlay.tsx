@@ -91,7 +91,7 @@ export default function SurpriseOverlay({ giftMode, onComplete }: SurpriseOverla
               transition={{ delay: 0.8, duration: 0.8, ease: "easeOut" }}
               className="text-4xl md:text-5xl font-light tracking-tight text-white/90 mb-4"
             >
-              I have a surprise for you.
+              Tengo una sorpresa para ti.
             </motion.h1>
 
             <motion.p
@@ -100,7 +100,7 @@ export default function SurpriseOverlay({ giftMode, onComplete }: SurpriseOverla
               transition={{ delay: 1, duration: 0.8, ease: "easeOut" }}
               className="text-lg md:text-xl font-light text-white/50 mb-12 tracking-wide"
             >
-              I've been waiting to tell you this.
+              He estado esperando para decirte esto.
             </motion.p>
 
             <motion.button
@@ -113,7 +113,7 @@ export default function SurpriseOverlay({ giftMode, onComplete }: SurpriseOverla
               {/* Button Glow on Hover */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-transparent via-white/10 to-transparent blur-md" />
               <span className="relative z-10 text-white font-medium tracking-widest uppercase text-sm">
-                Open
+                Abrir
               </span>
             </motion.button>
           </motion.div>

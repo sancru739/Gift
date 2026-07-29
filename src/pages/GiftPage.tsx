@@ -50,13 +50,13 @@ export default function GiftPage() {
               className="mb-12"
             >
               <p className="text-sm md:text-base font-light text-white/50 tracking-widest uppercase mb-4">
-                For someone very special.
+                Para alguien muy especial.
               </p>
               <h1 className="text-4xl md:text-6xl font-light tracking-tight mb-4">
-                This is for you.
+                Esto es para ti.
               </h1>
               <p className="text-lg font-light text-white/60">
-                I hope this makes you smile.
+                Espero que esto te haga sonreír.
               </p>
             </motion.div>
 
@@ -160,7 +160,7 @@ export default function GiftPage() {
               {isLocked ? (
                 <div className="flex flex-col items-center gap-4">
                   <p className="text-sm font-light text-white/50 tracking-widest uppercase">
-                    Available in
+                    Disponible en
                   </p>
                   <div className="scale-75 md:scale-100 origin-top">
                     <Countdown 
@@ -180,7 +180,7 @@ export default function GiftPage() {
                     }
                   `}
                 >
-                  {isOpened ? 'Opening...' : 'Open Gift'}
+                  {isOpened ? 'Abriendo...' : 'Abrir Regalo'}
                 </button>
               )}
             </motion.div>
