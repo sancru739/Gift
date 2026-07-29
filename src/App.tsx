@@ -1,5 +1,6 @@
 import { Routes, Route, useLocation } from "react-router-dom"
-import { lazy, Suspense, ComponentType } from "react"
+import { lazy, Suspense } from "react"
+import type { ComponentType } from "react"
 import { MainLayout } from "@/components/layout/MainLayout"
 import { giftConfig } from "@/config/gift"
 
@@ -17,7 +18,8 @@ function lazyWithRetry<T extends ComponentType<any>>(componentImport: () => Prom
       if (!pageHasAlreadyBeenForceRefreshed) {
         window.sessionStorage.setItem('page-has-been-force-refreshed', 'true')
         window.location.reload()
-        return { default: () => null as any }
+        // Return a promise that never resolves while the page is reloading
+        return new Promise<{ default: T }>(() => {}) 
       }
       throw error
     }
