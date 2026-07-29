@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, Variants } from "framer-motion"
 import { useNavigate } from "react-router-dom"
 import { Countdown } from "@/components/ui/Countdown"
 
@@ -17,7 +17,7 @@ export default function RevealPage() {
   }
 
   // Animation variants for staggered text reveal
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -28,7 +28,7 @@ export default function RevealPage() {
     }
   }
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 20, filter: "blur(10px)" },
     visible: { 
       opacity: 1, 
