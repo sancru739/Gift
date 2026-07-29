@@ -14,10 +14,11 @@ export function MainLayout() {
 
   return (
     <div className="relative flex min-h-screen flex-col bg-background text-foreground">
-      {giftConfig.enabled && giftConfig.showIntro && (
+      {giftConfig.enabled && giftConfig.showIntro ? (
         <SurpriseOverlay giftMode={true} />
+      ) : (
+        <WelcomeLetter />
       )}
-      <WelcomeLetter />
       <Navbar />
       <EasterEggOverlay />
       <main className="flex-1 flex flex-col">
