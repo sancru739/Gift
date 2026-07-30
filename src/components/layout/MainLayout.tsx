@@ -6,7 +6,6 @@ import { useLocation } from "react-router-dom"
 import { EasterEggOverlay } from "./EasterEggOverlay"
 import MusicWidget from "@/components/features/Music/MusicWidget"
 import WelcomeLetter from "@/components/features/Home/WelcomeLetter"
-import SurpriseOverlay from "@/components/features/Home/SurpriseOverlay"
 import { giftConfig } from "@/config/gift"
 
 export function MainLayout() {
@@ -14,11 +13,7 @@ export function MainLayout() {
 
   return (
     <div className="relative flex min-h-screen flex-col bg-background text-foreground">
-      {giftConfig.enabled && giftConfig.showIntro ? (
-        <SurpriseOverlay giftMode={true} />
-      ) : (
-        <WelcomeLetter />
-      )}
+      <WelcomeLetter />
       <Navbar />
       <EasterEggOverlay />
       <main className="flex-1 flex flex-col">
