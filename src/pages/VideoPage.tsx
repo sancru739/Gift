@@ -1,8 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
-import { VideoLayout } from "@/components/features/Video/VideoLayout"
-import { VideoPlayer } from "@/components/features/Video/VideoPlayer"
 
 export default function VideoPage() {
   const navigate = useNavigate()

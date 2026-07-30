@@ -8,8 +8,6 @@ export default function GiftPage() {
   const [showVideo, setShowVideo] = useState(false)
   const [isLocked, setIsLocked] = useState(false)
 
-  // This will be replaced by the actual video URL the user wants
-  const videoUrl = giftConfig.video 
 
   useEffect(() => {
     const unlockTime = new Date(giftConfig.unlockDate).getTime()
