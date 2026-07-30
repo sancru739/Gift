@@ -192,14 +192,22 @@ export default function GiftPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1.5, ease: "easeInOut" }}
-            className="absolute inset-0 z-50 bg-black flex items-center justify-center"
+            className="absolute inset-0 z-50 bg-black flex flex-col items-center justify-center p-6 text-center"
           >
-            <video 
-              src={videoUrl}
-              autoPlay 
-              controls
-              className="w-full h-full object-contain max-h-screen"
-            />
+            <h2 className="text-3xl md:text-5xl font-light mb-8">
+              ¡Sorpresa!
+            </h2>
+            <p className="text-lg md:text-xl font-light text-white/70 mb-12 max-w-lg">
+              He guardado el video en Google Drive para que lo veas con la mejor calidad y sin interrupciones.
+            </p>
+            <a
+              href="https://drive.google.com/file/d/1rFYbpx2KPu5edwxwO5LlFQOOTmvFtEHk/view?usp=sharing"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-8 py-4 bg-white text-black rounded-full font-medium tracking-widest uppercase hover:scale-105 hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] transition-all duration-300"
+            >
+              Ver Video en Drive
+            </a>
           </motion.div>
         )}
       </AnimatePresence>
