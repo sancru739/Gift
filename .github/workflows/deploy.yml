@@ -23,11 +23,6 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Download Video from Google Drive
-        run: |
-          pip install gdown
-          mkdir -p public/videos
-          gdown 1rFYbpx2KPu5edwxwO5LlFQOOTmvFtEHk -O public/videos/regalo.mp4
 
       - name: Build
         run: npm run build
