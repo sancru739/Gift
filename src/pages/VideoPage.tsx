@@ -24,7 +24,7 @@ export default function VideoPage() {
         {!isFadingOut && (
           <VideoLayout key="video-layout">
             <VideoPlayer 
-              src="/videos/surprise.mp4" 
+              src={`${import.meta.env.BASE_URL}videos/surprise.mp4`} 
               onEnded={handleVideoEnded} 
             />
           </VideoLayout>
