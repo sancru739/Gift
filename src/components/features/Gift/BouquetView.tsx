@@ -13,18 +13,33 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
   const { flowers, intro } = bouquetContent
   const [discoveredIds, setDiscoveredIds] = useState<Set<string>>(new Set())
   const [activeFlower, setActiveFlower] = useState<FlowerMemory | null>(null)
+  const [tappedFlowerId, setTappedFlowerId] = useState<string | null>(null)
   const [showHint, setShowHint] = useState(true)
   const [pulsePosition, setPulsePosition] = useState<{ x: number; y: number } | null>(null)
 
   const handleFlowerTap = useCallback((flower: FlowerMemory, clientX: number, clientY: number) => {
-    // Show pulse at tap position
-    setPulsePosition({ x: clientX, y: clientY })
-    setTimeout(() => setPulsePosition(null), 600)
+    // 1. Subtle mobile haptic feedback if supported (Android / iOS)
+    if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+      try {
+        navigator.vibrate(25)
+      } catch {
+        // Ignore if restricted
+      }
+    }
 
-    // Hide hint after first tap
+    // 2. Subtle micro-animation at touch coordinates
+    setPulsePosition({ x: clientX, y: clientY })
+    setTappedFlowerId(flower.id)
+
+    setTimeout(() => {
+      setPulsePosition(null)
+      setTappedFlowerId(null)
+    }, 600)
+
+    // Hide breathing hint once user interacts
     if (showHint) setShowHint(false)
 
-    // Open the memory
+    // 3. Open memory modal
     setActiveFlower(flower)
   }, [showHint])
 
@@ -34,10 +49,9 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
         const next = new Set(prev)
         next.add(activeFlower.id)
 
-        // Check if all discovered
+        // If all flowers discovered, transition to finale after modal closes
         if (next.size === flowers.length) {
-          // Small delay before finale
-          setTimeout(() => onAllDiscovered(), 800)
+          setTimeout(() => onAllDiscovered(), 700)
         }
 
         return next
@@ -47,14 +61,18 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
   }, [activeFlower, flowers.length, onAllDiscovered])
 
   return (
-    <div className="h-full w-full relative bg-black overflow-hidden flex items-center justify-center">
-      {/* Bouquet image container — precisely 9:16 aspect ratio matching image */}
+    <div className="h-full w-full relative bg-[#0a0a0a] overflow-hidden flex items-center justify-center select-none">
+      {/* Subtle ambient light glow behind bouquet */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(212,163,115,0.06)_0%,_transparent_65%)] pointer-events-none" />
+
+      {/* Photorealistic Bouquet Frame — Fixed 9:16 aspect ratio matching image */}
       <motion.div
-        initial={{ opacity: 0, scale: 1.05 }}
+        initial={{ opacity: 0, scale: 1.03 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] as const }}
+        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] as const }}
         className="relative aspect-[9/16] h-full max-h-full max-w-full flex items-center justify-center select-none"
       >
+        {/* The real bouquet photograph as the primary asset */}
         <img
           src={bouquetContent.image}
           alt="Ramo de flores"
@@ -62,76 +80,79 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
           draggable={false}
         />
 
-        {/* Invisible flower zones — precisely mapped over the 9:16 frame */}
-        <div className="absolute inset-0">
+        {/* Interactive Hotspots — Invisible zones over the flowers */}
+        {/* While modal is active, pointer-events are disabled on hotspots to prevent accidental clicks */}
+        <div
+          className={`absolute inset-0 transition-opacity duration-300 ${
+            activeFlower ? "pointer-events-none" : "pointer-events-auto"
+          }`}
+        >
           {flowers.map((flower) => (
             <FlowerZone
               key={flower.id}
               flower={flower}
               isDiscovered={discoveredIds.has(flower.id)}
+              isCurrentlyTapped={tappedFlowerId === flower.id}
               onTap={handleFlowerTap}
             />
           ))}
         </div>
       </motion.div>
 
-      {/* Pulse effect on tap */}
+      {/* Sutil touch pulse ripple effect at the exact tap coordinates */}
       <AnimatePresence>
         {pulsePosition && (
           <motion.div
-            key="pulse"
-            initial={{ scale: 0, opacity: 0.6 }}
-            animate={{ scale: 2.5, opacity: 0 }}
+            key="pulse-outer"
+            initial={{ scale: 0.2, opacity: 0.8 }}
+            animate={{ scale: 2.2, opacity: 0 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="fixed w-12 h-12 rounded-full bg-[#d4a373]/30 pointer-events-none -translate-x-1/2 -translate-y-1/2"
+            transition={{ duration: 0.55, ease: "easeOut" }}
+            className="fixed w-16 h-16 rounded-full border border-[#d4a373]/80 bg-[#d4a373]/20 pointer-events-none -translate-x-1/2 -translate-y-1/2 z-30"
             style={{ left: pulsePosition.x, top: pulsePosition.y }}
           />
         )}
       </AnimatePresence>
 
-      {/* Hint text — disappears after first tap */}
+      {/* Subtle Hint text — Fades out after first interaction */}
       <AnimatePresence>
         {showHint && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             transition={{ delay: 1, duration: 0.8 }}
-            className="absolute bottom-8 left-0 right-0 flex flex-col items-center text-center pointer-events-none z-10"
+            className="absolute bottom-6 left-0 right-0 flex flex-col items-center text-center pointer-events-none z-10 px-4"
           >
             <motion.p
-              animate={{ opacity: [0.5, 1, 0.5] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              className="text-base md:text-lg font-light text-white/70 tracking-wide mb-1"
+              animate={{ opacity: [0.6, 1, 0.6] }}
+              transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
+              className="text-sm md:text-base font-light text-white/80 tracking-wide mb-1 drop-shadow-md"
             >
               {intro.hint}
             </motion.p>
-            <p className="text-sm font-light text-white/40 tracking-wider">
+            <p className="text-xs md:text-sm font-light text-white/50 tracking-wider">
               {intro.hintSub}
             </p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Discovered counter — very subtle, bottom corner */}
-      {discoveredIds.size > 0 && discoveredIds.size < flowers.length && (
+      {/* Progress counter — Elegant, minimal bottom indicator */}
+      {discoveredIds.size > 0 && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="absolute bottom-4 right-4 z-10"
+          className="absolute bottom-4 right-4 z-10 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/10"
         >
-          <p className="text-xs font-light text-white/20 tracking-widest">
+          <p className="text-[11px] font-light text-[#d4a373] tracking-widest">
             {discoveredIds.size} / {flowers.length}
           </p>
         </motion.div>
       )}
 
-      {/* Memory Modal */}
-      <MemoryModal
-        flower={activeFlower}
-        onClose={handleCloseModal}
-      />
+      {/* Elegant Memory Modal / Panel */}
+      <MemoryModal flower={activeFlower} onClose={handleCloseModal} />
     </div>
   )
 }

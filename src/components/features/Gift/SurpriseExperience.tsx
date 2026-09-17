@@ -4,10 +4,12 @@ import { BouquetIntro } from "./BouquetIntro"
 import { BouquetView } from "./BouquetView"
 import { BouquetFinale } from "./BouquetFinale"
 
+import { giftConfig } from "@/config/gift"
+
 type Phase = "intro" | "bouquet" | "finale"
 
 export function SurpriseExperience() {
-  const [phase, setPhase] = useState<Phase>("intro")
+  const [phase, setPhase] = useState<Phase>(giftConfig.showIntro ? "intro" : "bouquet")
 
   const handleStart = useCallback(() => setPhase("bouquet"), [])
   const handleAllDiscovered = useCallback(() => setPhase("finale"), [])

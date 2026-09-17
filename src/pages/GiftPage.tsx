@@ -19,6 +19,8 @@ export default function GiftPage() {
     const unlockTime = new Date(giftConfig.unlockDate).getTime()
     if (new Date().getTime() < unlockTime && !window.location.href.includes("preview=true")) {
       setIsLocked(true)
+    } else {
+      setShowSurprise(true)
     }
   }, [])
 

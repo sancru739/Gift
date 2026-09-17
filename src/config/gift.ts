@@ -4,5 +4,5 @@ export const giftConfig = {
   meetingDate: "2026-10-09T00:00:00",
   video: import.meta.env.BASE_URL + "videos/regalo.mp4",
   surpriseMusic: import.meta.env.BASE_URL + "music/sorpresa.mp3", // Subir canción acá
-  showIntro: true
+  showIntro: false // Ramo directo como pantalla principal
 }

@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X } from "lucide-react"
 import type { FlowerMemory } from "@/data/bouquetContent"
@@ -8,82 +9,115 @@ interface MemoryModalProps {
 }
 
 export function MemoryModal({ flower, onClose }: MemoryModalProps) {
+  // Lock body scroll on mobile/desktop while open
+  useEffect(() => {
+    if (flower) {
+      const originalOverflow = document.body.style.overflow
+      document.body.style.overflow = "hidden"
+      return () => {
+        document.body.style.overflow = originalOverflow
+      }
+    }
+  }, [flower])
+
+  // ESC key support for desktop
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose()
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [onClose])
+
   return (
     <AnimatePresence>
       {flower && (
-        <>
-          {/* Backdrop */}
+        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center pointer-events-auto">
+          {/* Backdrop — intercepts all touch & clicks to protect background */}
           <motion.div
             key="backdrop"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-md touch-none select-none"
             onClick={onClose}
+            aria-hidden="true"
           />
 
-          {/* Modal card */}
+          {/* Modal Card — Bottom sheet on mobile, centered modal on desktop */}
           <motion.div
-            key="modal"
-            initial={{ opacity: 0, y: 100, scale: 0.95 }}
+            key="modal-card"
+            initial={{ opacity: 0, y: 60, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 60, scale: 0.95 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] as const }}
-            className="fixed inset-x-4 bottom-4 z-50 max-w-lg mx-auto md:inset-x-auto md:bottom-auto md:top-1/2 md:-translate-y-1/2"
+            exit={{ opacity: 0, y: 40, scale: 0.96 }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] as const }}
+            className="relative z-50 w-full max-w-lg mx-3 mb-3 md:mb-0 md:mx-auto max-h-[85vh] flex flex-col bg-[#121212]/95 border border-white/15 backdrop-blur-2xl rounded-3xl shadow-[0_20px_70px_rgba(0,0,0,0.8)] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="memory-title"
           >
-            <div className="relative bg-[#111]/95 border border-white/10 backdrop-blur-2xl rounded-3xl shadow-[0_0_60px_rgba(0,0,0,0.5)] overflow-hidden">
-              {/* Close button */}
-              <button
-                onClick={onClose}
-                className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-white/50 hover:bg-white/10 hover:text-white transition-all"
-                aria-label="Cerrar"
-              >
-                <X className="w-4 h-4" />
-              </button>
+            {/* Close Button — Large touch target for mobile (min 44x44px) */}
+            <button
+              type="button"
+              onClick={onClose}
+              className="absolute top-4 right-4 z-20 w-11 h-11 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-95 text-white/70 hover:text-white transition-all border border-white/10"
+              aria-label="Cerrar recuerdo"
+            >
+              <X className="w-5 h-5" />
+            </button>
 
-              {/* Photo (if present) */}
+            {/* Scrollable container for memory content */}
+            <div className="overflow-y-auto overscroll-contain flex-1">
+              {/* Photo (if provided) */}
               {flower.memory.photo && (
-                <div className="w-full h-48 md:h-56 overflow-hidden">
+                <div className="relative w-full h-52 md:h-60 overflow-hidden bg-black/40">
                   <img
                     src={flower.memory.photo}
                     alt={flower.memory.title}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-x-0 top-0 h-48 md:h-56 bg-gradient-to-b from-transparent via-transparent to-[#111]/95 pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-transparent to-transparent pointer-events-none" />
                 </div>
               )}
 
-              {/* Content */}
+              {/* Memory content details */}
               <div className="p-6 md:p-8">
-                {/* Flower name — subtle label */}
-                <p className="text-xs font-light text-[#d4a373]/60 tracking-[0.3em] uppercase mb-3">
-                  {flower.flower}
-                </p>
+                {/* Flower identifier badge */}
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="w-2 h-2 rounded-full bg-[#d4a373] animate-pulse" />
+                  <p className="text-xs font-light text-[#d4a373] tracking-[0.25em] uppercase">
+                    {flower.flower}
+                  </p>
+                </div>
 
-                {/* Memory title */}
-                <h3 className="text-2xl md:text-3xl font-light tracking-tight text-white/90 mb-4">
+                {/* Memory Title */}
+                <h3
+                  id="memory-title"
+                  className="text-2xl md:text-3xl font-light tracking-tight text-white mb-2"
+                >
                   {flower.memory.title}
                 </h3>
 
-                {/* Date (if present) */}
+                {/* Date (if specified) */}
                 {flower.memory.date && (
-                  <p className="text-sm font-light text-white/30 tracking-wider mb-4">
+                  <p className="text-xs font-light text-white/40 tracking-wider mb-5 uppercase">
                     {flower.memory.date}
                   </p>
                 )}
 
-                {/* Memory text */}
-                <p className="text-base md:text-lg font-light text-white/60 leading-relaxed">
+                {/* Memory Body Text */}
+                <p className="text-base md:text-lg font-light text-white/75 leading-relaxed whitespace-pre-line">
                   {flower.memory.text}
                 </p>
 
-                {/* Decorative divider */}
-                <div className="mt-6 w-12 h-[1px] bg-gradient-to-r from-[#d4a373]/40 to-transparent" />
+                {/* Warm decorative gold divider */}
+                <div className="mt-8 w-16 h-[1px] bg-gradient-to-r from-[#d4a373]/60 via-[#d4a373]/20 to-transparent" />
               </div>
             </div>
           </motion.div>
-        </>
+        </div>
       )}
     </AnimatePresence>
   )
