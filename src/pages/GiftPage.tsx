@@ -11,8 +11,13 @@ export default function GiftPage() {
 
 
   useEffect(() => {
+    const isPreviewBouquet = window.location.href.includes("preview=bouquet")
+    if (isPreviewBouquet) {
+      setShowSurprise(true)
+      return
+    }
     const unlockTime = new Date(giftConfig.unlockDate).getTime()
-    if (new Date().getTime() < unlockTime) {
+    if (new Date().getTime() < unlockTime && !window.location.href.includes("preview=true")) {
       setIsLocked(true)
     }
   }, [])
