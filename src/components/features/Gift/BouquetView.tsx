@@ -48,37 +48,30 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
 
   return (
     <div className="h-full w-full relative bg-black overflow-hidden flex items-center justify-center">
-      {/* Bouquet image */}
+      {/* Bouquet image container — precisely 9:16 aspect ratio matching image */}
       <motion.div
         initial={{ opacity: 0, scale: 1.05 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] as const }}
-        className="relative w-full h-full flex items-center justify-center"
+        className="relative aspect-[9/16] h-full max-h-full max-w-full flex items-center justify-center select-none"
       >
         <img
           src={bouquetContent.image}
           alt="Ramo de flores"
-          className="w-full h-full object-contain select-none"
+          className="w-full h-full object-cover select-none pointer-events-none"
           draggable={false}
         />
 
-        {/* Invisible flower zones */}
+        {/* Invisible flower zones — precisely mapped over the 9:16 frame */}
         <div className="absolute inset-0">
-          {/* We need to position zones relative to the image, not the container.
-              Since the image uses object-contain, we create an overlay that matches
-              the image dimensions within the container */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="relative" style={{ aspectRatio: '9/16', height: '100%', maxWidth: '100%' }}>
-              {flowers.map((flower) => (
-                <FlowerZone
-                  key={flower.id}
-                  flower={flower}
-                  isDiscovered={discoveredIds.has(flower.id)}
-                  onTap={handleFlowerTap}
-                />
-              ))}
-            </div>
-          </div>
+          {flowers.map((flower) => (
+            <FlowerZone
+              key={flower.id}
+              flower={flower}
+              isDiscovered={discoveredIds.has(flower.id)}
+              onTap={handleFlowerTap}
+            />
+          ))}
         </div>
       </motion.div>
 

@@ -40,7 +40,7 @@ export const bouquetContent = {
     {
       id: "hibiscus",
       flower: "Hibiscus",
-      zone: { top: 28, left: 22, width: 26, height: 16 },
+      zone: { top: 37, left: 34, width: 32, height: 18 },
       memory: {
         title: "Nuestro comienzo",
         text: "Placeholder: Escribí acá el recuerdo asociado al Hibiscus. Esta es la flor protagonista del ramo.",
@@ -48,29 +48,29 @@ export const bouquetContent = {
       },
     },
     {
-      id: "fresia-blanca",
+      id: "fresia-amarilla",
       flower: "Fresia",
-      zone: { top: 12, left: 38, width: 18, height: 14 },
+      zone: { top: 25, left: 13, width: 18, height: 12 },
       memory: {
         title: "Un momento especial",
-        text: "Placeholder: Escribí acá el recuerdo asociado a la Fresia blanca.",
+        text: "Placeholder: Escribí acá el recuerdo asociado a la Fresia.",
         date: "",
       },
     },
     {
-      id: "fresia-lila",
-      flower: "Fresia lila",
-      zone: { top: 18, left: 56, width: 16, height: 14 },
+      id: "fresia-crema",
+      flower: "Fresia crema",
+      zone: { top: 19, left: 57, width: 18, height: 10 },
       memory: {
         title: "Esa vez que...",
-        text: "Placeholder: Escribí acá el recuerdo asociado a la Fresia lila/violeta.",
+        text: "Placeholder: Escribí acá el recuerdo asociado a la Fresia crema.",
         date: "",
       },
     },
     {
       id: "girasol",
       flower: "Girasol",
-      zone: { top: 22, left: 36, width: 14, height: 12 },
+      zone: { top: 52, left: 58, width: 21, height: 13 },
       memory: {
         title: "Luz en mis días",
         text: "Placeholder: Escribí acá el recuerdo asociado al Girasol.",
@@ -79,8 +79,8 @@ export const bouquetContent = {
     },
     {
       id: "rosa-roja",
-      flower: "Rosa",
-      zone: { top: 44, left: 26, width: 16, height: 14 },
+      flower: "Rosa roja",
+      zone: { top: 45, left: 65, width: 17, height: 10 },
       memory: {
         title: "Lo que siento",
         text: "Placeholder: Escribí acá el recuerdo asociado a la Rosa roja.",
@@ -89,18 +89,18 @@ export const bouquetContent = {
     },
     {
       id: "gerbera",
-      flower: "Gerbera",
-      zone: { top: 32, left: 8, width: 18, height: 14 },
+      flower: "Gerbera coral",
+      zone: { top: 44, left: 12, width: 17, height: 11 },
       memory: {
         title: "Tu sonrisa",
-        text: "Placeholder: Escribí acá el recuerdo asociado a la Gerbera coral.",
+        text: "Placeholder: Escribí acá el recuerdo asociado a la Gerbera.",
         date: "",
       },
     },
     {
       id: "margaritas",
       flower: "Margaritas",
-      zone: { top: 42, left: 36, width: 16, height: 12 },
+      zone: { top: 45, left: 80, width: 15, height: 11 },
       memory: {
         title: "Las cosas simples",
         text: "Placeholder: Escribí acá el recuerdo asociado a las Margaritas.",
