@@ -1,5 +1,5 @@
 import { memo } from "react"
-import type { FlowerMemory } from "@/data/bouquetContent"
+import type { FlowerMemory } from "@/data/memoriesData"
 
 interface FlowerZoneProps {
   flower: FlowerMemory
@@ -14,21 +14,21 @@ export const FlowerZone = memo(function FlowerZone({
   isCurrentlyTapped,
   onTap,
 }: FlowerZoneProps) {
-  const { zone } = flower
+  const { x, y, size = 16 } = flower.position
 
   const handlePress = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
-    let x = e.clientX
-    let y = e.clientY
+    let clientX = e.clientX
+    let clientY = e.clientY
 
-    // Fallback if triggered via keyboard or without coordinates
-    if (!x && !y) {
+    // Fallback if triggered via keyboard or without mouse coordinates
+    if (!clientX && !clientY) {
       const rect = e.currentTarget.getBoundingClientRect()
-      x = rect.left + rect.width / 2
-      y = rect.top + rect.height / 2
+      clientX = rect.left + rect.width / 2
+      clientY = rect.top + rect.height / 2
     }
 
-    onTap(flower, x, y)
+    onTap(flower, clientX, clientY)
   }
 
   return (
@@ -36,21 +36,22 @@ export const FlowerZone = memo(function FlowerZone({
       type="button"
       className="absolute cursor-pointer rounded-full select-none outline-none focus:outline-none -webkit-tap-highlight-color-transparent active:scale-95 transition-transform duration-150 min-w-[44px] min-h-[44px]"
       style={{
-        top: `${zone.top}%`,
-        left: `${zone.left}%`,
-        width: `${zone.width}%`,
-        height: `${zone.height}%`,
+        left: `${x}%`,
+        top: `${y}%`,
+        width: `${size}%`,
+        height: `${size}%`,
+        transform: "translate(-50%, -50%)",
         touchAction: "manipulation",
       }}
       onClick={handlePress}
-      aria-label={`Flor: ${flower.flower}${isDiscovered ? " (descubierta)" : ""}`}
+      aria-label={`Flor: ${flower.flowerName || flower.flowerType}${
+        isDiscovered ? " (descubierta)" : ""
+      }`}
     >
-      {/* Invisible normally — no permanent borders, no permanent circles, no text */}
-      {/* Sutil micro-animación al ser tocada */}
+      {/* Invisible hotspot — zero visual borders or circles when idle */}
+      {/* Micro-animación de halo momentánea al recibir tap */}
       {isCurrentlyTapped && (
-        <span
-          className="absolute inset-0 rounded-full animate-ping pointer-events-none opacity-40 bg-[radial-gradient(circle,_rgba(254,240,138,0.8)_0%,_rgba(212,163,115,0.4)_50%,_transparent_75%)]"
-        />
+        <span className="absolute inset-0 rounded-full animate-ping pointer-events-none opacity-40 bg-[radial-gradient(circle,_rgba(254,240,138,0.8)_0%,_rgba(212,163,115,0.4)_50%,_transparent_75%)]" />
       )}
     </button>
   )

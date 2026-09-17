@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { bouquetContent } from "@/data/bouquetContent"
-import type { FlowerMemory } from "@/data/bouquetContent"
+import { memoriesData } from "@/data/memoriesData"
+import type { FlowerMemory } from "@/data/memoriesData"
 import { FlowerZone } from "./FlowerZone"
 import { MemoryModal } from "./MemoryModal"
 
@@ -10,7 +10,7 @@ interface BouquetViewProps {
 }
 
 export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
-  const { flowers, intro } = bouquetContent
+  const { memories, intro, image } = memoriesData
   const [discoveredIds, setDiscoveredIds] = useState<Set<string>>(new Set())
   const [activeFlower, setActiveFlower] = useState<FlowerMemory | null>(null)
   const [tappedFlowerId, setTappedFlowerId] = useState<string | null>(null)
@@ -23,7 +23,7 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
       try {
         navigator.vibrate(25)
       } catch {
-        // Ignore if restricted
+        // Ignore if unsupported or restricted
       }
     }
 
@@ -36,7 +36,7 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
       setTappedFlowerId(null)
     }, 600)
 
-    // Hide breathing hint once user interacts
+    // Hide hint after user's first interaction
     if (showHint) setShowHint(false)
 
     // 3. Open memory modal
@@ -50,7 +50,7 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
         next.add(activeFlower.id)
 
         // If all flowers discovered, transition to finale after modal closes
-        if (next.size === flowers.length) {
+        if (next.size === memories.length) {
           setTimeout(() => onAllDiscovered(), 700)
         }
 
@@ -58,11 +58,11 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
       })
     }
     setActiveFlower(null)
-  }, [activeFlower, flowers.length, onAllDiscovered])
+  }, [activeFlower, memories.length, onAllDiscovered])
 
   return (
     <div className="h-full w-full relative bg-[#0a0a0a] overflow-hidden flex items-center justify-center select-none">
-      {/* Subtle ambient light glow behind bouquet */}
+      {/* Ambient background light */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(212,163,115,0.06)_0%,_transparent_65%)] pointer-events-none" />
 
       {/* Photorealistic Bouquet Frame — Fixed 9:16 aspect ratio matching image */}
@@ -72,22 +72,21 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
         transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] as const }}
         className="relative aspect-[9/16] h-full max-h-full max-w-full flex items-center justify-center select-none"
       >
-        {/* The real bouquet photograph as the primary asset */}
+        {/* Real bouquet photograph */}
         <img
-          src={bouquetContent.image}
+          src={image}
           alt="Ramo de flores"
           className="w-full h-full object-cover select-none pointer-events-none"
           draggable={false}
         />
 
-        {/* Interactive Hotspots — Invisible zones over the flowers */}
-        {/* While modal is active, pointer-events are disabled on hotspots to prevent accidental clicks */}
+        {/* Interactive Hotspots — Disabled while modal is open */}
         <div
           className={`absolute inset-0 transition-opacity duration-300 ${
             activeFlower ? "pointer-events-none" : "pointer-events-auto"
           }`}
         >
-          {flowers.map((flower) => (
+          {memories.map((flower) => (
             <FlowerZone
               key={flower.id}
               flower={flower}
@@ -99,7 +98,7 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
         </div>
       </motion.div>
 
-      {/* Sutil touch pulse ripple effect at the exact tap coordinates */}
+      {/* Touch pulse ripple effect */}
       <AnimatePresence>
         {pulsePosition && (
           <motion.div
@@ -114,7 +113,7 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
         )}
       </AnimatePresence>
 
-      {/* Subtle Hint text — Fades out after first interaction */}
+      {/* Subtle hint text */}
       <AnimatePresence>
         {showHint && (
           <motion.div
@@ -138,7 +137,7 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
         )}
       </AnimatePresence>
 
-      {/* Progress counter — Elegant, minimal bottom indicator */}
+      {/* Progress counter */}
       {discoveredIds.size > 0 && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -146,12 +145,12 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
           className="absolute bottom-4 right-4 z-10 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/10"
         >
           <p className="text-[11px] font-light text-[#d4a373] tracking-widest">
-            {discoveredIds.size} / {flowers.length}
+            {discoveredIds.size} / {memories.length}
           </p>
         </motion.div>
       )}
 
-      {/* Elegant Memory Modal / Panel */}
+      {/* Memory Modal */}
       <MemoryModal flower={activeFlower} onClose={handleCloseModal} />
     </div>
   )

@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X } from "lucide-react"
-import type { FlowerMemory } from "@/data/bouquetContent"
+import type { FlowerMemory } from "@/data/memoriesData"
 
 interface MemoryModalProps {
   flower: FlowerMemory | null
@@ -70,12 +70,12 @@ export function MemoryModal({ flower, onClose }: MemoryModalProps) {
 
             {/* Scrollable container for memory content */}
             <div className="overflow-y-auto overscroll-contain flex-1">
-              {/* Photo (if provided) */}
-              {flower.memory.photo && (
+              {/* Optional Photo */}
+              {flower.image && (
                 <div className="relative w-full h-52 md:h-60 overflow-hidden bg-black/40">
                   <img
-                    src={flower.memory.photo}
-                    alt={flower.memory.title}
+                    src={flower.image}
+                    alt={flower.title}
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-transparent to-transparent pointer-events-none" />
@@ -88,7 +88,7 @@ export function MemoryModal({ flower, onClose }: MemoryModalProps) {
                 <div className="flex items-center gap-2 mb-3">
                   <span className="w-2 h-2 rounded-full bg-[#d4a373] animate-pulse" />
                   <p className="text-xs font-light text-[#d4a373] tracking-[0.25em] uppercase">
-                    {flower.flower}
+                    {flower.flowerName || flower.flowerType}
                   </p>
                 </div>
 
@@ -97,19 +97,19 @@ export function MemoryModal({ flower, onClose }: MemoryModalProps) {
                   id="memory-title"
                   className="text-2xl md:text-3xl font-light tracking-tight text-white mb-2"
                 >
-                  {flower.memory.title}
+                  {flower.title}
                 </h3>
 
                 {/* Date (if specified) */}
-                {flower.memory.date && (
+                {flower.date && (
                   <p className="text-xs font-light text-white/40 tracking-wider mb-5 uppercase">
-                    {flower.memory.date}
+                    {flower.date}
                   </p>
                 )}
 
-                {/* Memory Body Text */}
+                {/* Memory Body Text / Message */}
                 <p className="text-base md:text-lg font-light text-white/75 leading-relaxed whitespace-pre-line">
-                  {flower.memory.text}
+                  {flower.message}
                 </p>
 
                 {/* Warm decorative gold divider */}
