@@ -1,9 +1,11 @@
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { memoriesData } from "@/data/memoriesData"
 import type { FlowerMemory } from "@/data/memoriesData"
 import { FlowerZone } from "./FlowerZone"
 import { MemoryModal } from "./MemoryModal"
+
+const STORAGE_KEY = "sept21_discovered_memories"
 
 interface BouquetViewProps {
   onAllDiscovered: () => void
@@ -11,23 +13,46 @@ interface BouquetViewProps {
 
 export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
   const { memories, intro, image } = memoriesData
-  const [discoveredIds, setDiscoveredIds] = useState<Set<string>>(new Set())
+
+  // Persistencia elegante en localStorage durante la sesión o recargas
+  const [discoveredIds, setDiscoveredIds] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY)
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (Array.isArray(parsed)) return new Set(parsed)
+      }
+    } catch {
+      // Ignore if localStorage unavailable
+    }
+    return new Set()
+  })
+
   const [activeFlower, setActiveFlower] = useState<FlowerMemory | null>(null)
   const [tappedFlowerId, setTappedFlowerId] = useState<string | null>(null)
-  const [showHint, setShowHint] = useState(true)
+  const [showHint, setShowHint] = useState(() => discoveredIds.size === 0)
   const [pulsePosition, setPulsePosition] = useState<{ x: number; y: number } | null>(null)
 
+  // Guardar en localStorage cuando se descubra una flor
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(discoveredIds)))
+    } catch {
+      // Ignore if quota exceeded or restricted
+    }
+  }, [discoveredIds])
+
   const handleFlowerTap = useCallback((flower: FlowerMemory, clientX: number, clientY: number) => {
-    // 1. Subtle mobile haptic feedback if supported (Android / iOS)
+    // 1. Vibración háptica suave si el dispositivo lo admite
     if (typeof navigator !== "undefined" && "vibrate" in navigator) {
       try {
         navigator.vibrate(25)
       } catch {
-        // Ignore if unsupported or restricted
+        // Ignore
       }
     }
 
-    // 2. Subtle micro-animation at touch coordinates
+    // 2. Micro-animación de pulso en el punto exacto del toque
     setPulsePosition({ x: clientX, y: clientY })
     setTappedFlowerId(flower.id)
 
@@ -36,10 +61,9 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
       setTappedFlowerId(null)
     }, 600)
 
-    // Hide hint after user's first interaction
     if (showHint) setShowHint(false)
 
-    // 3. Open memory modal
+    // 3. Abrir el modal del recuerdo
     setActiveFlower(flower)
   }, [showHint])
 
@@ -47,10 +71,11 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
     if (activeFlower) {
       setDiscoveredIds((prev) => {
         const next = new Set(prev)
+        const isNewlyDiscovered = !next.has(activeFlower.id)
         next.add(activeFlower.id)
 
-        // If all flowers discovered, transition to finale after modal closes
-        if (next.size === memories.length) {
+        // Si se acaba de descubrir el último recuerdo, transicionar al final tras cerrar
+        if (isNewlyDiscovered && next.size === memories.length) {
           setTimeout(() => onAllDiscovered(), 700)
         }
 
@@ -60,19 +85,21 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
     setActiveFlower(null)
   }, [activeFlower, memories.length, onAllDiscovered])
 
+  const allCompleted = discoveredIds.size === memories.length
+
   return (
     <div className="h-full w-full relative bg-[#0a0a0a] overflow-hidden flex items-center justify-center select-none">
-      {/* Ambient background light */}
+      {/* Luz ambiental sutil */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(212,163,115,0.06)_0%,_transparent_65%)] pointer-events-none" />
 
-      {/* Photorealistic Bouquet Frame — Fixed 9:16 aspect ratio matching image */}
+      {/* Contenedor del Ramo fotorrealista (proporción 9:16 fija) */}
       <motion.div
         initial={{ opacity: 0, scale: 1.03 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] as const }}
         className="relative aspect-[9/16] h-full max-h-full max-w-full flex items-center justify-center select-none"
       >
-        {/* Real bouquet photograph */}
+        {/* Fotografía principal del ramo */}
         <img
           src={image}
           alt="Ramo de flores"
@@ -80,7 +107,7 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
           draggable={false}
         />
 
-        {/* Interactive Hotspots — Disabled while modal is open */}
+        {/* Zonas interactivas invisibles — deshabilitadas mientras el modal está activo */}
         <div
           className={`absolute inset-0 transition-opacity duration-300 ${
             activeFlower ? "pointer-events-none" : "pointer-events-auto"
@@ -98,7 +125,7 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
         </div>
       </motion.div>
 
-      {/* Touch pulse ripple effect */}
+      {/* Animación sutil de pulso al tocar */}
       <AnimatePresence>
         {pulsePosition && (
           <motion.div
@@ -113,7 +140,7 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
         )}
       </AnimatePresence>
 
-      {/* Subtle hint text */}
+      {/* Texto de guía sutil — desaparece tras la primera interacción */}
       <AnimatePresence>
         {showHint && (
           <motion.div
@@ -137,20 +164,48 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
         )}
       </AnimatePresence>
 
-      {/* Progress counter */}
+      {/* 
+        Sistema de progreso discreto y poético (NO gamificado):
+        Muestra delicadamente en una esquina flotante los recuerdos descubiertos.
+      */}
       {discoveredIds.size > 0 && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="absolute bottom-4 right-4 z-10 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/10"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="absolute bottom-4 right-4 z-20 flex items-center gap-2 bg-black/40 backdrop-blur-xl px-3.5 py-1.5 rounded-full border border-white/10 shadow-lg select-none"
         >
-          <p className="text-[11px] font-light text-[#d4a373] tracking-widest">
-            {discoveredIds.size} / {memories.length}
-          </p>
+          <span className="w-1.5 h-1.5 rounded-full bg-[#d4a373] animate-pulse" />
+          <div className="flex items-center text-[11px] font-light text-white/60 tracking-wider">
+            {/* Animación mínima al incrementar el número */}
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={discoveredIds.size}
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 4 }}
+                transition={{ duration: 0.25 }}
+                className="text-white font-medium mr-1"
+              >
+                {discoveredIds.size}
+              </motion.span>
+            </AnimatePresence>
+            <span>de {memories.length} recuerdos</span>
+          </div>
+
+          {/* Si ya descubrió todos, botón sutil para revivir el final */}
+          {allCompleted && (
+            <button
+              onClick={onAllDiscovered}
+              className="ml-2 pl-2 border-l border-white/20 text-[10px] text-[#d4a373] hover:text-white transition-colors cursor-pointer"
+            >
+              Ver final
+            </button>
+          )}
         </motion.div>
       )}
 
-      {/* Memory Modal */}
+      {/* Modal elegante para el recuerdo */}
       <MemoryModal flower={activeFlower} onClose={handleCloseModal} />
     </div>
   )
