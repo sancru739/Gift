@@ -6,7 +6,6 @@ import { useLocation } from "react-router-dom"
 import { EasterEggOverlay } from "./EasterEggOverlay"
 import MusicWidget from "@/components/features/Music/MusicWidget"
 import WelcomeLetter from "@/components/features/Home/WelcomeLetter"
-import { giftConfig } from "@/config/gift"
 
 export function MainLayout() {
   const location = useLocation()
