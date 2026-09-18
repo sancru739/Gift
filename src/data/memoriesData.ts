@@ -62,11 +62,11 @@ export const memoriesData: BouquetConfig = {
   // Imagen principal del ramo (fotorrealista, formato vertical 9:16)
   image: import.meta.env.BASE_URL + "images/bouquet.jpg",
 
-  // Textos de introducción (se muestran antes de interactuar)
+  // Textos de introducción (breves, poéticos y sutiles)
   intro: {
-    preTitle: "21 de septiembre",
-    title: "Esto es para vos.",
-    hint: "Tocá una flor...",
+    preTitle: "Para vos.",
+    title: "Hay algo que quiero mostrarte.",
+    hint: "Tocá una flor.",
     hintSub: "Cada una guarda un recuerdo.",
   },
 

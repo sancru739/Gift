@@ -14,7 +14,7 @@ interface BouquetViewProps {
 export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
   const { memories, intro, image } = memoriesData
 
-  // Persistencia elegante en localStorage durante la sesión o recargas
+  // Persistencia de recuerdos descubiertos
   const [discoveredIds, setDiscoveredIds] = useState<Set<string>>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY)
@@ -23,27 +23,33 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
         if (Array.isArray(parsed)) return new Set(parsed)
       }
     } catch {
-      // Ignore if localStorage unavailable
+      // Ignore
     }
     return new Set()
   })
 
+  // Estado para la introducción inicial
+  // Si ya descubrió algún recuerdo en una visita previa, la intro no vuelve a mostrarse
+  const [showIntro, setShowIntro] = useState(() => discoveredIds.size === 0)
   const [activeFlower, setActiveFlower] = useState<FlowerMemory | null>(null)
   const [tappedFlowerId, setTappedFlowerId] = useState<string | null>(null)
-  const [showHint, setShowHint] = useState(() => discoveredIds.size === 0)
   const [pulsePosition, setPulsePosition] = useState<{ x: number; y: number } | null>(null)
 
-  // Guardar en localStorage cuando se descubra una flor
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(discoveredIds)))
     } catch {
-      // Ignore if quota exceeded or restricted
+      // Ignore
     }
   }, [discoveredIds])
 
   const handleFlowerTap = useCallback((flower: FlowerMemory, clientX: number, clientY: number) => {
-    // 1. Vibración háptica suave si el dispositivo lo admite
+    // Cuando el usuario toca una flor por primera vez, la intro se desvanece suavemente
+    if (showIntro) {
+      setShowIntro(false)
+    }
+
+    // Vibración háptica suave en celular si está disponible
     if (typeof navigator !== "undefined" && "vibrate" in navigator) {
       try {
         navigator.vibrate(25)
@@ -52,7 +58,7 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
       }
     }
 
-    // 2. Micro-animación de pulso en el punto exacto del toque
+    // Micro-animación de pulso
     setPulsePosition({ x: clientX, y: clientY })
     setTappedFlowerId(flower.id)
 
@@ -61,11 +67,9 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
       setTappedFlowerId(null)
     }, 600)
 
-    if (showHint) setShowHint(false)
-
-    // 3. Abrir el modal del recuerdo
+    // Abrir el recuerdo
     setActiveFlower(flower)
-  }, [showHint])
+  }, [showIntro])
 
   const handleCloseModal = useCallback(() => {
     if (activeFlower) {
@@ -74,7 +78,6 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
         const isNewlyDiscovered = !next.has(activeFlower.id)
         next.add(activeFlower.id)
 
-        // Si se acaba de descubrir el último recuerdo, transicionar al final tras cerrar
         if (isNewlyDiscovered && next.size === memories.length) {
           setTimeout(() => onAllDiscovered(), 700)
         }
@@ -88,18 +91,81 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
   const allCompleted = discoveredIds.size === memories.length
 
   return (
-    <div className="h-full w-full relative bg-[#0a0a0a] overflow-hidden flex items-center justify-center select-none">
-      {/* Luz ambiental sutil */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(212,163,115,0.06)_0%,_transparent_65%)] pointer-events-none" />
+    <div className="h-full w-full relative bg-[#0a0a0a] overflow-hidden flex items-center justify-center select-none font-sans">
+      {/* Luz de fondo cálida y ambiental */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(212,163,115,0.08)_0%,_transparent_70%)] pointer-events-none" />
 
-      {/* Contenedor del Ramo fotorrealista (proporción 9:16 fija) */}
+      {/* =======================================================================
+          INTRODUCCIÓN ELEGANTE Y BREVE:
+          Flota sobre el ramo y desaparece con una suave transición cuando el
+          usuario comienza a interactuar.
+          ======================================================================= */}
+      <AnimatePresence>
+        {showIntro && (
+          <>
+            {/* Mensaje superior: "Para vos. / Hay algo que quiero mostrarte." */}
+            <motion.div
+              initial={{ opacity: 0, y: -15, filter: "blur(4px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -10, filter: "blur(8px)" }}
+              transition={{ delay: 0.3, duration: 1, ease: [0.16, 1, 0.3, 1] as const }}
+              className="absolute top-8 md:top-12 inset-x-0 z-20 flex flex-col items-center text-center px-6 pointer-events-none"
+            >
+              <p className="text-xs md:text-sm font-light text-[#d4a373] tracking-[0.35em] uppercase mb-2">
+                {intro.preTitle}
+              </p>
+              <h1 className="text-xl md:text-2xl lg:text-3xl font-extralight text-white/95 tracking-wide drop-shadow-md">
+                {intro.title}
+              </h1>
+            </motion.div>
+
+            {/* Mensaje inferior: "Tocá una flor. / Cada una guarda un recuerdo." */}
+            <motion.div
+              initial={{ opacity: 0, y: 15, filter: "blur(4px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: 10, filter: "blur(8px)" }}
+              transition={{ delay: 1.1, duration: 1, ease: [0.16, 1, 0.3, 1] as const }}
+              className="absolute bottom-10 md:bottom-12 inset-x-0 z-20 flex flex-col items-center text-center px-6 pointer-events-none"
+            >
+              {/* Micro-pulsación sutil para guiar la mirada */}
+              <motion.div
+                animate={{
+                  opacity: [0.75, 1, 0.75],
+                  y: [0, -3, 0],
+                }}
+                transition={{
+                  duration: 2.6,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className="flex flex-col items-center"
+              >
+                <div className="w-1.5 h-1.5 rounded-full bg-[#d4a373] mb-2.5 shadow-[0_0_8px_rgba(212,163,115,0.8)]" />
+                <p className="text-base md:text-lg font-light text-white tracking-wide mb-1 drop-shadow-md">
+                  {intro.hint}
+                </p>
+                <p className="text-xs md:text-sm font-extralight text-white/60 tracking-widest">
+                  {intro.hintSub}
+                </p>
+              </motion.div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Sutil gradiente para asegurar contraste en textos superior e inferior */}
+      <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/70 via-black/20 to-transparent pointer-events-none z-10" />
+      <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none z-10" />
+
+      {/* =======================================================================
+          RAMO DE FLORES — PROTAGONISTA ABSOLUTO
+          ======================================================================= */}
       <motion.div
-        initial={{ opacity: 0, scale: 1.03 }}
+        initial={{ opacity: 0, scale: 1.04 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] as const }}
+        transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] as const }}
         className="relative aspect-[9/16] h-full max-h-full max-w-full flex items-center justify-center select-none"
       >
-        {/* Fotografía principal del ramo */}
         <img
           src={image}
           alt="Ramo de flores"
@@ -107,7 +173,7 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
           draggable={false}
         />
 
-        {/* Zonas interactivas invisibles — deshabilitadas mientras el modal está activo */}
+        {/* Zonas interactivas invisibles */}
         <div
           className={`absolute inset-0 transition-opacity duration-300 ${
             activeFlower ? "pointer-events-none" : "pointer-events-auto"
@@ -125,7 +191,7 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
         </div>
       </motion.div>
 
-      {/* Animación sutil de pulso al tocar */}
+      {/* Efecto de pulso en el punto exacto del toque */}
       <AnimatePresence>
         {pulsePosition && (
           <motion.div
@@ -140,44 +206,16 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
         )}
       </AnimatePresence>
 
-      {/* Texto de guía sutil — desaparece tras la primera interacción */}
-      <AnimatePresence>
-        {showHint && (
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            transition={{ delay: 1, duration: 0.8 }}
-            className="absolute bottom-6 left-0 right-0 flex flex-col items-center text-center pointer-events-none z-10 px-4"
-          >
-            <motion.p
-              animate={{ opacity: [0.6, 1, 0.6] }}
-              transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
-              className="text-sm md:text-base font-light text-white/80 tracking-wide mb-1 drop-shadow-md"
-            >
-              {intro.hint}
-            </motion.p>
-            <p className="text-xs md:text-sm font-light text-white/50 tracking-wider">
-              {intro.hintSub}
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* 
-        Sistema de progreso discreto y poético (NO gamificado):
-        Muestra delicadamente en una esquina flotante los recuerdos descubiertos.
-      */}
-      {discoveredIds.size > 0 && (
+      {/* Sistema de progreso poético en la esquina inferior (aparece tras interactuar) */}
+      {!showIntro && discoveredIds.size > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="absolute bottom-4 right-4 z-20 flex items-center gap-2 bg-black/40 backdrop-blur-xl px-3.5 py-1.5 rounded-full border border-white/10 shadow-lg select-none"
+          className="absolute bottom-4 right-4 z-20 flex items-center gap-2 bg-black/45 backdrop-blur-xl px-3.5 py-1.5 rounded-full border border-white/10 shadow-lg select-none"
         >
           <span className="w-1.5 h-1.5 rounded-full bg-[#d4a373] animate-pulse" />
           <div className="flex items-center text-[11px] font-light text-white/60 tracking-wider">
-            {/* Animación mínima al incrementar el número */}
             <AnimatePresence mode="wait">
               <motion.span
                 key={discoveredIds.size}
@@ -193,7 +231,6 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
             <span>de {memories.length} recuerdos</span>
           </div>
 
-          {/* Si ya descubrió todos, botón sutil para revivir el final */}
           {allCompleted && (
             <button
               onClick={onAllDiscovered}
@@ -205,7 +242,7 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
         </motion.div>
       )}
 
-      {/* Modal elegante para el recuerdo */}
+      {/* Modal elegante para visualizar el recuerdo */}
       <MemoryModal flower={activeFlower} onClose={handleCloseModal} />
     </div>
   )
