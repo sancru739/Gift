@@ -1,18 +1,21 @@
-import { useState, useCallback, useEffect } from "react"
+import { useState, useCallback, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import type { Variants } from "framer-motion"
+import { Volume2, VolumeX } from "lucide-react"
 import { memoriesData } from "@/data/memoriesData"
 import type { FlowerMemory } from "@/data/memoriesData"
+import { giftConfig } from "@/config/gift"
 import { FlowerZone } from "./FlowerZone"
 import { MemoryModal } from "./MemoryModal"
 
 const STORAGE_KEY = "sept21_discovered_memories"
 
 interface BouquetViewProps {
-  onAllDiscovered: () => void
+  onAllDiscovered?: () => void
 }
 
 export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
-  const { memories, intro, image } = memoriesData
+  const { memories, intro, finale, image } = memoriesData
 
   // Persistencia de recuerdos descubiertos
   const [discoveredIds, setDiscoveredIds] = useState<Set<string>>(() => {
@@ -28,13 +31,22 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
     return new Set()
   })
 
-  // Estado para la introducción inicial
-  // Si ya descubrió algún recuerdo en una visita previa, la intro no vuelve a mostrarse
+  // Estados de interfaz
   const [showIntro, setShowIntro] = useState(() => discoveredIds.size === 0)
   const [activeFlower, setActiveFlower] = useState<FlowerMemory | null>(null)
   const [tappedFlowerId, setTappedFlowerId] = useState<string | null>(null)
   const [pulsePosition, setPulsePosition] = useState<{ x: number; y: number } | null>(null)
 
+  // Estado final: se activa cuando todos los recuerdos fueron descubiertos
+  const [isFinaleActive, setIsFinaleActive] = useState(() => discoveredIds.size === memories.length)
+  const [showFinaleCard, setShowFinaleCard] = useState(() => discoveredIds.size === memories.length)
+
+  // Audio opcional si está configurado
+  const [isPlayingMusic, setIsPlayingMusic] = useState(false)
+  const [isMuted, setIsMuted] = useState(false)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+
+  // Sincronizar localStorage
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(discoveredIds)))
@@ -43,13 +55,36 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
     }
   }, [discoveredIds])
 
+  // Manejar música opcional cuando entra al estado final
+  useEffect(() => {
+    if (isFinaleActive && giftConfig.surpriseMusic && !isPlayingMusic) {
+      const audio = new Audio(giftConfig.surpriseMusic)
+      audio.loop = true
+      audio.volume = 0.4
+      audioRef.current = audio
+      audio.play().then(() => setIsPlayingMusic(true)).catch(() => {
+        // Autoplay bloqueado por el navegador hasta interacción del usuario
+      })
+
+      return () => {
+        audio.pause()
+      }
+    }
+  }, [isFinaleActive, isPlayingMusic])
+
+  const toggleMute = () => {
+    if (audioRef.current) {
+      audioRef.current.muted = !isMuted
+      setIsMuted(!isMuted)
+    }
+  }
+
   const handleFlowerTap = useCallback((flower: FlowerMemory, clientX: number, clientY: number) => {
-    // Cuando el usuario toca una flor por primera vez, la intro se desvanece suavemente
     if (showIntro) {
       setShowIntro(false)
     }
 
-    // Vibración háptica suave en celular si está disponible
+    // Vibración háptica suave en celular
     if (typeof navigator !== "undefined" && "vibrate" in navigator) {
       try {
         navigator.vibrate(25)
@@ -58,7 +93,6 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
       }
     }
 
-    // Micro-animación de pulso
     setPulsePosition({ x: clientX, y: clientY })
     setTappedFlowerId(flower.id)
 
@@ -67,7 +101,6 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
       setTappedFlowerId(null)
     }, 600)
 
-    // Abrir el recuerdo
     setActiveFlower(flower)
   }, [showIntro])
 
@@ -78,8 +111,14 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
         const isNewlyDiscovered = !next.has(activeFlower.id)
         next.add(activeFlower.id)
 
+        // Si se descubrió el último recuerdo:
         if (isNewlyDiscovered && next.size === memories.length) {
-          setTimeout(() => onAllDiscovered(), 700)
+          // Breve pausa para cerrar el modal antes de iniciar la transición final
+          setTimeout(() => {
+            setIsFinaleActive(true)
+            setShowFinaleCard(true)
+            onAllDiscovered?.()
+          }, 600)
         }
 
         return next
@@ -88,22 +127,51 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
     setActiveFlower(null)
   }, [activeFlower, memories.length, onAllDiscovered])
 
-  const allCompleted = discoveredIds.size === memories.length
+  // Variantes para el mensaje final
+  const finaleContainerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.35,
+        delayChildren: 0.4,
+      },
+    },
+  }
+
+  const finaleItemVariants: Variants = {
+    hidden: { opacity: 0, y: 16, filter: "blur(6px)" },
+    visible: {
+      opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
+      transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] as const },
+    },
+  }
 
   return (
     <div className="h-full w-full relative bg-[#0a0a0a] overflow-hidden flex items-center justify-center select-none font-sans">
       {/* Luz de fondo cálida y ambiental */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(212,163,115,0.08)_0%,_transparent_70%)] pointer-events-none" />
 
+      {/* Control de audio discreto en la esquina superior si hay música reproduciéndose */}
+      {isPlayingMusic && (
+        <button
+          onClick={toggleMute}
+          className="absolute top-6 right-6 z-30 w-9 h-9 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/60 hover:text-white transition-all cursor-pointer"
+          aria-label={isMuted ? "Activar música" : "Silenciar música"}
+        >
+          {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+        </button>
+      )}
+
       {/* =======================================================================
-          INTRODUCCIÓN ELEGANTE Y BREVE:
-          Flota sobre el ramo y desaparece con una suave transición cuando el
-          usuario comienza a interactuar.
+          INTRODUCCIÓN INICIAL BREVE
           ======================================================================= */}
       <AnimatePresence>
-        {showIntro && (
+        {showIntro && !isFinaleActive && (
           <>
-            {/* Mensaje superior: "Para vos. / Hay algo que quiero mostrarte." */}
+            {/* Mensaje superior */}
             <motion.div
               initial={{ opacity: 0, y: -15, filter: "blur(4px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -119,7 +187,7 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
               </h1>
             </motion.div>
 
-            {/* Mensaje inferior: "Tocá una flor. / Cada una guarda un recuerdo." */}
+            {/* Mensaje inferior */}
             <motion.div
               initial={{ opacity: 0, y: 15, filter: "blur(4px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -127,7 +195,6 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
               transition={{ delay: 1.1, duration: 1, ease: [0.16, 1, 0.3, 1] as const }}
               className="absolute bottom-10 md:bottom-12 inset-x-0 z-20 flex flex-col items-center text-center px-6 pointer-events-none"
             >
-              {/* Micro-pulsación sutil para guiar la mirada */}
               <motion.div
                 animate={{
                   opacity: [0.75, 1, 0.75],
@@ -153,17 +220,23 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
         )}
       </AnimatePresence>
 
-      {/* Sutil gradiente para asegurar contraste en textos superior e inferior */}
+      {/* Sutiles gradientes de borde */}
       <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/70 via-black/20 to-transparent pointer-events-none z-10" />
       <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none z-10" />
 
       {/* =======================================================================
-          RAMO DE FLORES — PROTAGONISTA ABSOLUTO
+          RAMO DE FLORES — PROTAGONISTA
+          1. Transición visual sutil en estado final (suave ajuste de profundidad).
+          2. Animación armónica conjunta de las flores descubiertas.
           ======================================================================= */}
       <motion.div
         initial={{ opacity: 0, scale: 1.04 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] as const }}
+        animate={{
+          opacity: 1,
+          scale: isFinaleActive && showFinaleCard ? 1.02 : 1,
+          filter: isFinaleActive && showFinaleCard ? "brightness(0.65) contrast(1.05)" : "brightness(1) contrast(1)",
+        }}
+        transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] as const }}
         className="relative aspect-[9/16] h-full max-h-full max-w-full flex items-center justify-center select-none"
       >
         <img
@@ -173,10 +246,10 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
           draggable={false}
         />
 
-        {/* Zonas interactivas invisibles */}
+        {/* Zonas interactivas con animación armónica en estado final */}
         <div
           className={`absolute inset-0 transition-opacity duration-300 ${
-            activeFlower ? "pointer-events-none" : "pointer-events-auto"
+            activeFlower || (isFinaleActive && showFinaleCard) ? "pointer-events-none" : "pointer-events-auto"
           }`}
         >
           {memories.map((flower) => (
@@ -185,13 +258,14 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
               flower={flower}
               isDiscovered={discoveredIds.has(flower.id)}
               isCurrentlyTapped={tappedFlowerId === flower.id}
+              isFinale={isFinaleActive}
               onTap={handleFlowerTap}
             />
           ))}
         </div>
       </motion.div>
 
-      {/* Efecto de pulso en el punto exacto del toque */}
+      {/* Efecto de pulso en el toque */}
       <AnimatePresence>
         {pulsePosition && (
           <motion.div
@@ -206,43 +280,140 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
         )}
       </AnimatePresence>
 
-      {/* Sistema de progreso poético en la esquina inferior (aparece tras interactuar) */}
-      {!showIntro && discoveredIds.size > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="absolute bottom-4 right-4 z-20 flex items-center gap-2 bg-black/45 backdrop-blur-xl px-3.5 py-1.5 rounded-full border border-white/10 shadow-lg select-none"
-        >
-          <span className="w-1.5 h-1.5 rounded-full bg-[#d4a373] animate-pulse" />
-          <div className="flex items-center text-[11px] font-light text-white/60 tracking-wider">
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={discoveredIds.size}
-                initial={{ opacity: 0, y: -4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 4 }}
-                transition={{ duration: 0.25 }}
-                className="text-white font-medium mr-1"
-              >
-                {discoveredIds.size}
-              </motion.span>
-            </AnimatePresence>
-            <span>de {memories.length} recuerdos</span>
-          </div>
+      {/* =======================================================================
+          3. EL PROGRESO DESAPARECE EN EL ESTADO FINAL
+          (Sólo se muestra mientras el usuario está descubriendo)
+          ======================================================================= */}
+      <AnimatePresence>
+        {!showIntro && discoveredIds.size > 0 && !isFinaleActive && (
+          <motion.div
+            key="progress-tracker"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10, filter: "blur(6px)" }}
+            transition={{ duration: 0.5 }}
+            className="absolute bottom-4 right-4 z-20 flex items-center gap-2 bg-black/45 backdrop-blur-xl px-3.5 py-1.5 rounded-full border border-white/10 shadow-lg select-none"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-[#d4a373] animate-pulse" />
+            <div className="flex items-center text-[11px] font-light text-white/60 tracking-wider">
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={discoveredIds.size}
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 4 }}
+                  transition={{ duration: 0.25 }}
+                  className="text-white font-medium mr-1"
+                >
+                  {discoveredIds.size}
+                </motion.span>
+              </AnimatePresence>
+              <span>de {memories.length} recuerdos</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-          {allCompleted && (
-            <button
-              onClick={onAllDiscovered}
-              className="ml-2 pl-2 border-l border-white/20 text-[10px] text-[#d4a373] hover:text-white transition-colors cursor-pointer"
+      {/* =======================================================================
+          4. ESTADO FINAL: MENSAJE FINAL
+          Sin confetti, sin corazones cayendo, sin estridencias.
+          Composición pura, tipografía poética y cierre natural.
+          ======================================================================= */}
+      <AnimatePresence>
+        {isFinaleActive && showFinaleCard && (
+          <motion.div
+            key="finale-card"
+            initial={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
+            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+            exit={{ opacity: 0, scale: 0.95, filter: "blur(8px)" }}
+            transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] as const }}
+            className="fixed inset-0 z-40 flex flex-col items-center justify-center px-6 text-center"
+          >
+            {/* Backdrop oscuro con desenfoque suave para enfocar el mensaje */}
+            <div
+              className="absolute inset-0 bg-black/45 backdrop-blur-[6px]"
+              onClick={() => setShowFinaleCard(false)}
+            />
+
+            {/* Tarjeta del mensaje de cierre */}
+            <motion.div
+              variants={finaleContainerVariants}
+              initial="hidden"
+              animate="visible"
+              className="relative z-10 max-w-lg w-full bg-[#111]/90 border border-white/10 backdrop-blur-2xl rounded-3xl p-8 md:p-12 shadow-[0_25px_80px_rgba(0,0,0,0.8)]"
             >
-              Ver final
-            </button>
-          )}
-        </motion.div>
-      )}
+              {/* Sutil punto de luz dorada */}
+              <motion.div variants={finaleItemVariants} className="flex justify-center mb-6">
+                <span className="w-2 h-2 rounded-full bg-[#d4a373] shadow-[0_0_12px_rgba(212,163,115,0.8)]" />
+              </motion.div>
 
-      {/* Modal elegante para visualizar el recuerdo */}
+              {/* Línea 1 */}
+              <motion.p
+                variants={finaleItemVariants}
+                className="text-lg md:text-xl font-light text-white/80 leading-relaxed tracking-wide"
+              >
+                {finale.line1}
+              </motion.p>
+
+              {/* Línea 2 */}
+              <motion.p
+                variants={finaleItemVariants}
+                className="text-xl md:text-2xl font-light text-white leading-relaxed tracking-tight mt-2"
+              >
+                {finale.line2}
+              </motion.p>
+
+              {/* Línea divisoria minimalista */}
+              <motion.div
+                variants={finaleItemVariants}
+                className="w-16 h-[1px] bg-gradient-to-r from-transparent via-[#d4a373]/60 to-transparent my-7 mx-auto"
+              />
+
+              {/* Saludo final: "Feliz 21 de septiembre." */}
+              <motion.p
+                variants={finaleItemVariants}
+                className="text-sm md:text-base font-light text-[#d4a373] tracking-[0.25em] uppercase"
+              >
+                {finale.greeting}
+              </motion.p>
+
+              {/* Opción sutil para contemplar el ramo iluminado */}
+              <motion.div variants={finaleItemVariants} className="mt-8">
+                <button
+                  type="button"
+                  onClick={() => setShowFinaleCard(false)}
+                  className="text-xs font-light text-white/40 hover:text-white/80 tracking-widest uppercase transition-colors cursor-pointer border-b border-white/10 hover:border-white/30 pb-0.5"
+                >
+                  Ver ramo iluminado
+                </button>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Botón flotante mínimo si el usuario minimizó el mensaje final para admirar las flores */}
+      <AnimatePresence>
+        {isFinaleActive && !showFinaleCard && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.4 }}
+            className="absolute bottom-6 inset-x-0 z-30 flex justify-center pointer-events-auto"
+          >
+            <button
+              type="button"
+              onClick={() => setShowFinaleCard(true)}
+              className="px-5 py-2 rounded-full bg-black/60 backdrop-blur-xl border border-white/15 text-xs font-light text-[#d4a373] hover:text-white tracking-widest uppercase transition-all shadow-lg cursor-pointer"
+            >
+              Leer mensaje final
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Modal de recuerdos (permite releer cualquier memoria si el mensaje final está minimizado) */}
       <MemoryModal flower={activeFlower} onClose={handleCloseModal} />
     </div>
   )

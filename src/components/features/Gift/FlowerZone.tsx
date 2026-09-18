@@ -6,6 +6,7 @@ interface FlowerZoneProps {
   flower: FlowerMemory
   isDiscovered: boolean
   isCurrentlyTapped: boolean
+  isFinale?: boolean
   onTap: (flower: FlowerMemory, clientX: number, clientY: number) => void
 }
 
@@ -13,6 +14,7 @@ export const FlowerZone = memo(function FlowerZone({
   flower,
   isDiscovered,
   isCurrentlyTapped,
+  isFinale = false,
   onTap,
 }: FlowerZoneProps) {
   const { x, y, size = 16 } = flower.position
@@ -22,7 +24,6 @@ export const FlowerZone = memo(function FlowerZone({
     let clientX = e.clientX
     let clientY = e.clientY
 
-    // Fallback if triggered via keyboard or without mouse coordinates
     if (!clientX && !clientY) {
       const rect = e.currentTarget.getBoundingClientRect()
       clientX = rect.left + rect.width / 2
@@ -50,30 +51,43 @@ export const FlowerZone = memo(function FlowerZone({
       }`}
     >
       {/* 
-        Flor descubierta: Indicador extremadamente sutil.
-        Simula una pequeña gota de rocío / brillo de luz estelar tenue (1.5px)
-        en el centro de la flor, sin marcos ni bordes que alteren la foto del ramo.
+        Gota de rocío / brillo en flores descubiertas.
+        En el estado final (isFinale), todas las flores realizan una sutil
+        animación armónica conjunta de respiración de luz cálida.
       */}
       {isDiscovered && !isCurrentlyTapped && (
         <motion.span
           initial={{ scale: 0, opacity: 0 }}
-          animate={{
-            scale: [0.85, 1.15, 0.85],
-            opacity: [0.35, 0.7, 0.35],
-          }}
+          animate={
+            isFinale
+              ? {
+                  scale: [0.9, 1.4, 0.9],
+                  opacity: [0.45, 0.9, 0.45],
+                }
+              : {
+                  scale: [0.85, 1.15, 0.85],
+                  opacity: [0.35, 0.7, 0.35],
+                }
+          }
           transition={{
-            duration: 3.8,
+            duration: isFinale ? 2.8 : 3.8,
             repeat: Infinity,
             ease: "easeInOut",
-            delay: (x * 0.05) % 2,
+            delay: isFinale ? (x * 0.02) % 1.5 : (x * 0.05) % 2,
           }}
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center"
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-[#fef08a] shadow-[0_0_8px_2px_rgba(254,240,138,0.5)]" />
+          <span
+            className={`rounded-full transition-all duration-700 ${
+              isFinale
+                ? "w-2 h-2 bg-[#fef08a] shadow-[0_0_12px_3px_rgba(254,240,138,0.7)]"
+                : "w-1.5 h-1.5 bg-[#fef08a] shadow-[0_0_8px_2px_rgba(254,240,138,0.5)]"
+            }`}
+          />
         </motion.span>
       )}
 
-      {/* Micro-animación de halo momentánea al recibir tap */}
+      {/* Micro-animación de halo al recibir tap */}
       {isCurrentlyTapped && (
         <span className="absolute inset-0 rounded-full animate-ping pointer-events-none opacity-40 bg-[radial-gradient(circle,_rgba(254,240,138,0.8)_0%,_rgba(212,163,115,0.4)_50%,_transparent_75%)]" />
       )}

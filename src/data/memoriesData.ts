@@ -49,11 +49,9 @@ export interface BouquetConfig {
     hintSub: string
   }
   finale: {
-    preTitle: string
-    title: string
-    subtitle: string
-    finalNote: string
-    countdownLabel: string
+    line1: string
+    line2: string
+    greeting: string
   }
   memories: FlowerMemory[]
 }
@@ -70,13 +68,11 @@ export const memoriesData: BouquetConfig = {
     hintSub: "Cada una guarda un recuerdo.",
   },
 
-  // Configuración del mensaje final al descubrir todos los recuerdos
+  // Configuración del mensaje de cierre al descubrir todos los recuerdos
   finale: {
-    preTitle: "Descubriste todos los recuerdos",
-    title: "Te amo.",
-    subtitle: "Hoy, mañana, y todos los días que vengan.",
-    finalNote: "Cada segundo que pasa es uno menos para volver a abrazarte.",
-    countdownLabel: "Para volver a vernos",
+    line1: "Y entre todos estos recuerdos,",
+    line2: "hay uno que todavía quiero seguir construyendo con vos.",
+    greeting: "Feliz 21 de septiembre.",
   },
 
   // =====================================================================
