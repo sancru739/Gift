@@ -1,3 +1,8 @@
+git push (para guardar el código fuente en GitHub).
+npm run deploy (para publicar los cambios en GitHub Pages).
+
+
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.

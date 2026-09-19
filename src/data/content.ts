@@ -495,10 +495,11 @@ Si estás leyendo esto, significa que el tiempo nos ha seguido tratando con cari
     message: "Eres mi hoy y todos mis mañanas.",
   },
   music: {
-    title: "Nosotros",
-    artist: "Babasónicos",
-    albumCover: "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/9d/6e/47/9d6e4712-bc1f-fbe3-4aff-935e6806ca00/00602517690813.rgb.jpg/600x600bb.jpg",
-    src: import.meta.env.BASE_URL + "music/nosotros.m4a",
+    title: "Flores Amarillas",
+    artist: "Floricienta",
+    albumCover: "https://img.youtube.com/vi/S7gMzYqXIZc/0.jpg",
+    src: "https://www.youtube.com/watch?v=S7gMzYqXIZc",
+    isYouTube: true,
   },
   countdown: {
     targetDate: "2026-10-09T00:00:00",

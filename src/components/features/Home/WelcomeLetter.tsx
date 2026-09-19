@@ -7,24 +7,15 @@ export default function WelcomeLetter() {
   const [isDismissing, setIsDismissing] = useState(false)
 
   useEffect(() => {
-    // Check if the user has already seen the welcome letter this session
-    // We use sessionStorage so it shows once per visit (if they close the tab and come back, it shows again)
-    // If you want it to show ONLY ONCE EVER, change this to localStorage
-    const hasSeenWelcome = sessionStorage.getItem("hasSeenWelcomeLetter")
-    
-    if (!hasSeenWelcome) {
-      // Small delay before showing to let the main layout mount
-      const timer = setTimeout(() => {
-        setIsVisible(true)
-      }, 500)
-      return () => clearTimeout(timer)
-    }
+    // Always show the welcome letter to ensure user interaction for music
+    const timer = setTimeout(() => {
+      setIsVisible(true)
+    }, 500)
+    return () => clearTimeout(timer)
   }, [])
 
   const handleContinue = () => {
     setIsDismissing(true)
-    // Save to session storage
-    sessionStorage.setItem("hasSeenWelcomeLetter", "true")
     
     // Dispatch event to start the music
     window.dispatchEvent(new CustomEvent("START_MUSIC"))
@@ -78,10 +69,10 @@ export default function WelcomeLetter() {
                   Bienvenida a nuestro rinconcito especial.
                 </p>
                 <p>
-                  Quise hacer esto para poder tener en un lugar muchas cosas nuestras, recordar lo que venimos construyendo juntos y seguir avanzando.
+                  Mi chanchu, te quiero dar este regalito como recuerdo del gran amor que te tengo, me hubiera gustado darte algo en persona, pero estamos lejitos.
                 </p>
                 <p>
-                  Espero que te guste y puedas ver todo lo que preparé para vos.
+                  Sos mi vida, mi motivacion para crecer y ser alguien mejor, gracias por tu paciencia, tu cariño, tu alegria, y aun que a veces te hago renegar, siempre estamos ahí, eligiendonos dia tras dia.
                 </p>
                 <p className="pt-6 font-heading italic text-xl text-[#D4A373]">
                   Te amo con todo mi corazón, tu pipu.
