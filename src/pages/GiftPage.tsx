@@ -6,6 +6,7 @@ import { SurpriseExperience } from "@/components/features/Gift/SurpriseExperienc
 
 export default function GiftPage() {
   const [isOpened, setIsOpened] = useState(false)
+  const [showLetter, setShowLetter] = useState(false)
   const [showSurprise, setShowSurprise] = useState(false)
   const [isLocked, setIsLocked] = useState(false)
 
@@ -27,10 +28,15 @@ export default function GiftPage() {
   const handleOpen = () => {
     setIsOpened(true)
     
-    // Wait for gift box animation then transition to surprise
+    // Wait for gift box animation then transition to letter
     setTimeout(() => {
-      setShowSurprise(true)
+      setShowLetter(true)
     }, 2500)
+  }
+
+  const handleContinueToSurprise = () => {
+    setShowLetter(false)
+    setShowSurprise(true)
   }
 
   if (showSurprise) {
@@ -43,8 +49,44 @@ export default function GiftPage() {
       {/* Background Gradient */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent pointer-events-none" />
 
+      {/* The Letter before the surprise */}
       <AnimatePresence>
-        <motion.div
+        {showLetter && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, filter: "blur(10px)" }}
+            transition={{ duration: 1 }}
+            className="fixed inset-0 z-50 bg-[#1a1715] flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.2, delay: 0.5 }}
+              className="relative w-full max-w-2xl bg-[#FDFBF7] text-[#333333] p-8 md:p-16 rounded-[2rem] shadow-2xl text-center"
+            >
+              <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/cream-paper.png")' }} />
+              <div className="relative z-10">
+                <p className="text-xl md:text-2xl font-light leading-relaxed text-[#4A4744] mb-8">
+                  Mi chanchu, te quiero dar este regalito como recuerdo del gran amor que te tengo, me hubiera gustado darte algo en persona, pero estamos lejitos. 
+                  <br /><br />
+                  Sos mi vida, mi motivacion para crecer y ser alguien mejor, gracias por tu paciencia, tu cariño, tu alegria, y aun que a veces te hago renegar, siempre estamos ahí, eligiendonos dia tras dia.
+                </p>
+                <button
+                  onClick={handleContinueToSurprise}
+                  className="px-10 py-4 bg-[#2C2A29] text-[#FDFBF7] rounded-full font-medium tracking-wide uppercase text-sm hover:bg-[#D4A373] transition-colors duration-500 shadow-xl"
+                >
+                  Continuar
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {!showLetter && (
+          <motion.div
           key="gift-view"
           exit={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
           transition={{ duration: 1, ease: "easeInOut" }}
@@ -195,6 +237,7 @@ export default function GiftPage() {
           </motion.div>
 
         </motion.div>
+        )}
       </AnimatePresence>
     </div>
   )

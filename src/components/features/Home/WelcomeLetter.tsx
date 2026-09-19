@@ -72,10 +72,7 @@ export default function WelcomeLetter() {
                   Bienvenida a nuestro rinconcito especial.
                 </p>
                 <p>
-                  Mi chanchu, te quiero dar este regalito como recuerdo del gran amor que te tengo, me hubiera gustado darte algo en persona, pero estamos lejitos.
-                </p>
-                <p>
-                  Sos mi vida, mi motivacion para crecer y ser alguien mejor, gracias por tu paciencia, tu cariño, tu alegria, y aun que a veces te hago renegar, siempre estamos ahí, eligiendonos dia tras dia.
+                  Te preparé esto con muchísimo amor para que lo disfrutes y te quede como un recuerdo de todo lo lindo que vivimos.
                 </p>
                 <p className="pt-6 font-heading italic text-xl text-[#D4A373]">
                   Te amo con todo mi corazón, tu pipu.
