@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Heart } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 
 export default function WelcomeLetter() {
   const [isVisible, setIsVisible] = useState(false)
   const [isDismissing, setIsDismissing] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     // Always show the welcome letter to ensure user interaction for music
@@ -23,6 +25,7 @@ export default function WelcomeLetter() {
     // Wait for the exit animation before completely unmounting
     setTimeout(() => {
       setIsVisible(false)
+      navigate("/gift")
     }, 1200)
   }
 
