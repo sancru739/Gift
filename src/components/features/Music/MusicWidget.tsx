@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, X } from "lucide-react"
 import { SITE_CONTENT } from "@/data/content"
 import { cn } from "@/lib/utils"
-import ReactPlayer from "react-player"
 
 export default function MusicWidget() {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -12,15 +11,12 @@ export default function MusicWidget() {
   const [progress, setProgress] = useState(0)
   const [duration, setDuration] = useState(0)
   const [volume, setVolume] = useState(() => {
-    const saved = localStorage.getItem("music-volume")
-    return saved !== null ? parseFloat(saved) : 0.5
+    const saved = localStorage.getItem("gift-music-vol")
+    return saved !== null ? parseFloat(saved) : 0.25
   })
   const [isMuted, setIsMuted] = useState(false)
   
-  // Real volume sent to the player (used for fading)
-  const [currentVolume, setCurrentVolume] = useState(volume)
-  
-  const playerRef = useRef<ReactPlayer>(null)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
   const { music } = SITE_CONTENT
 
   const location = useLocation()
@@ -28,30 +24,32 @@ export default function MusicWidget() {
 
   // Handle fading volume when entering/leaving music page or muting
   useEffect(() => {
-    const targetVolume = (isMusicPage || isMuted) ? 0 : volume
+    if (!audioRef.current) return
     
+    const targetVolume = (isMusicPage || isMuted) ? 0 : volume
+    const currentVol = audioRef.current.volume
+    
+    // Smooth fade over 2 seconds
     const fadeDuration = 2000
     const steps = 40
     const intervalTime = fadeDuration / steps
+    const volStep = (targetVolume - currentVol) / steps
     
-    // We compute step incrementally based on difference
     let step = 0
-    const currentStartVol = currentVolume;
-    const volStep = (targetVolume - currentStartVol) / steps
-    
     const fade = setInterval(() => {
       step++
-      setCurrentVolume(prev => {
-        let nextVol = currentStartVol + (volStep * step)
+      if (audioRef.current) {
+        let nextVol = currentVol + (volStep * step)
         if (nextVol < 0) nextVol = 0
         if (nextVol > 1) nextVol = 1
-        return nextVol
-      })
+        audioRef.current.volume = nextVol
+      }
       
       if (step >= steps) {
         clearInterval(fade)
-        // If we faded out fully because of music page, pause it
-        if (isMusicPage && isPlaying && targetVolume === 0) {
+        // If we faded out fully because of music page, pause it so it doesn't play silently forever
+        if (isMusicPage && audioRef.current && isPlaying) {
+          audioRef.current.pause()
           setIsPlaying(false)
         }
       }
@@ -62,18 +60,26 @@ export default function MusicWidget() {
 
   // Save volume to localStorage
   useEffect(() => {
-    localStorage.setItem("music-volume", volume.toString())
+    localStorage.setItem("gift-music-vol", volume.toString())
   }, [volume])
 
   const togglePlay = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation()
+    if (!audioRef.current) return
+    
+    if (isPlaying) {
+      audioRef.current.pause()
+    } else {
+      audioRef.current.play()
+    }
     setIsPlaying(!isPlaying)
   }
 
   // Listen for global play event (e.g. from WelcomeLetter)
   useEffect(() => {
     const handleGlobalPlay = () => {
-      if (!isPlaying) {
+      if (audioRef.current && !isPlaying) {
+        audioRef.current.play().catch(e => console.log("Audio autoplay prevented", e))
         setIsPlaying(true)
       }
     }
@@ -81,11 +87,28 @@ export default function MusicWidget() {
     return () => window.removeEventListener("START_MUSIC", handleGlobalPlay)
   }, [isPlaying])
 
+  const lastUpdateTime = useRef(0)
+
+  const handleTimeUpdate = () => {
+    if (!audioRef.current) return
+    const currentTime = audioRef.current.currentTime
+    // Throttle updates to once per second to prevent massive re-renders
+    if (currentTime - lastUpdateTime.current >= 1 || currentTime < lastUpdateTime.current) {
+      setProgress(currentTime)
+      lastUpdateTime.current = currentTime
+    }
+  }
+
+  const handleLoadedMetadata = () => {
+    if (!audioRef.current) return
+    setDuration(audioRef.current.duration)
+  }
+
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation()
     const newTime = parseFloat(e.target.value)
-    if (playerRef.current) {
-      playerRef.current.seekTo(newTime, 'seconds')
+    if (audioRef.current) {
+      audioRef.current.currentTime = newTime
     }
     setProgress(newTime)
   }
@@ -108,26 +131,13 @@ export default function MusicWidget() {
 
   return (
     <>
-      <div className="fixed -left-[2000px] -top-[2000px] w-[300px] h-[300px] opacity-0 pointer-events-none -z-50">
-        <ReactPlayer
-          ref={playerRef}
-          url={music.src}
-          playing={isPlaying}
-          volume={currentVolume}
-          onProgress={(state) => {
-            setProgress(state.playedSeconds)
-          }}
-          onDuration={(d) => setDuration(d)}
-          onEnded={() => setIsPlaying(false)}
-          width="300px"
-          height="300px"
-          config={{
-            youtube: {
-              playerVars: { origin: typeof window !== 'undefined' ? window.location.origin : '' }
-            }
-          }}
-        />
-      </div>
+      <audio
+        ref={audioRef}
+        src={music.src}
+        onTimeUpdate={handleTimeUpdate}
+        onLoadedMetadata={handleLoadedMetadata}
+        onEnded={() => setIsPlaying(false)}
+      />
 
       <AnimatePresence>
         {!isMusicPage && (

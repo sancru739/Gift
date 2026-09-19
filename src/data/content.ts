@@ -498,8 +498,7 @@ Si estás leyendo esto, significa que el tiempo nos ha seguido tratando con cari
     title: "Flores Amarillas",
     artist: "Floricienta",
     albumCover: "https://img.youtube.com/vi/S7gMzYqXIZc/0.jpg",
-    src: "https://www.youtube.com/watch?v=S7gMzYqXIZc",
-    isYouTube: true,
+    src: import.meta.env.BASE_URL + "music/flores_amarillas.mp3",
   },
   countdown: {
     targetDate: "2026-10-09T00:00:00",
