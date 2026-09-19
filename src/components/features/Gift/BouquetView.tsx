@@ -42,9 +42,14 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
   const [showFinaleCard, setShowFinaleCard] = useState(() => discoveredIds.size === memories.length)
 
   // Audio opcional si está configurado
-  const [isPlayingMusic, setIsPlayingMusic] = useState(false)
+  const [hasStartedMusic, setHasStartedMusic] = useState(false)
+  const hasStartedMusicRef = useRef(false)
   const [isMuted, setIsMuted] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
+
+  // Prevención de re-renders innecesarios y memory leaks
+  const showIntroRef = useRef(discoveredIds.size === 0)
+  const pulseTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Sincronizar localStorage
   useEffect(() => {
@@ -55,22 +60,17 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
     }
   }, [discoveredIds])
 
-  // Manejar música opcional cuando entra al estado final
+  // Limpiar audio y timeouts al desmontar
   useEffect(() => {
-    if (isFinaleActive && giftConfig.surpriseMusic && !isPlayingMusic) {
-      const audio = new Audio(giftConfig.surpriseMusic)
-      audio.loop = true
-      audio.volume = 0.4
-      audioRef.current = audio
-      audio.play().then(() => setIsPlayingMusic(true)).catch(() => {
-        // Autoplay bloqueado por el navegador hasta interacción del usuario
-      })
-
-      return () => {
-        audio.pause()
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause()
+      }
+      if (pulseTimeoutRef.current) {
+        clearTimeout(pulseTimeoutRef.current)
       }
     }
-  }, [isFinaleActive, isPlayingMusic])
+  }, [])
 
   const toggleMute = () => {
     if (audioRef.current) {
@@ -80,8 +80,22 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
   }
 
   const handleFlowerTap = useCallback((flower: FlowerMemory, clientX: number, clientY: number) => {
-    if (showIntro) {
+    if (showIntroRef.current) {
+      showIntroRef.current = false
       setShowIntro(false)
+    }
+
+    // Iniciar música en la primera interacción
+    if (!hasStartedMusicRef.current && giftConfig.surpriseMusic) {
+      hasStartedMusicRef.current = true
+      setHasStartedMusic(true)
+      const audio = new Audio(giftConfig.surpriseMusic)
+      audio.loop = true
+      audio.volume = 0.4
+      audioRef.current = audio
+      audio.play().catch(() => {
+        // Autoplay bloqueado por el navegador
+      })
     }
 
     // Vibración háptica suave en celular
@@ -96,13 +110,16 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
     setPulsePosition({ x: clientX, y: clientY })
     setTappedFlowerId(flower.id)
 
-    setTimeout(() => {
+    if (pulseTimeoutRef.current) {
+      clearTimeout(pulseTimeoutRef.current)
+    }
+    pulseTimeoutRef.current = setTimeout(() => {
       setPulsePosition(null)
       setTappedFlowerId(null)
     }, 600)
 
     setActiveFlower(flower)
-  }, [showIntro])
+  }, [])
 
   const handleCloseModal = useCallback(() => {
     if (activeFlower) {
@@ -126,6 +143,37 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
     }
     setActiveFlower(null)
   }, [activeFlower, memories.length, onAllDiscovered])
+
+  // Sistema "Fat Finger": Encontrar la flor más cercana si el usuario falla el botón
+  const handleContainerClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (isFinaleActive && showFinaleCard) return;
+
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX;
+    const y = e.clientY;
+
+    let closestFlower: FlowerMemory | null = null;
+    let minDistance = Infinity;
+
+    memories.forEach((flower) => {
+      const flowerXPx = rect.left + (flower.position.x / 100) * rect.width;
+      const flowerYPx = rect.top + (flower.position.y / 100) * rect.height;
+      const dist = Math.sqrt(Math.pow(x - flowerXPx, 2) + Math.pow(y - flowerYPx, 2));
+      
+      if (dist < minDistance) {
+        minDistance = dist;
+        closestFlower = flower;
+      }
+    });
+
+    // 75px de radio máximo para compensar
+    if (closestFlower && minDistance <= 75) {
+      handleFlowerTap(closestFlower, x, y);
+    } else if (showIntroRef.current) {
+      showIntroRef.current = false;
+      setShowIntro(false);
+    }
+  }, [isFinaleActive, showFinaleCard, memories, handleFlowerTap]);
 
   // Variantes para el mensaje final
   const finaleContainerVariants: Variants = {
@@ -154,11 +202,12 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
       {/* Luz de fondo cálida y ambiental */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(212,163,115,0.08)_0%,_transparent_70%)] pointer-events-none" />
 
-      {/* Control de audio discreto en la esquina superior si hay música reproduciéndose */}
-      {isPlayingMusic && (
+      {/* Control de audio discreto en la esquina superior si la música fue iniciada */}
+      {hasStartedMusic && (
         <button
           onClick={toggleMute}
-          className="absolute top-6 right-6 z-30 w-9 h-9 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/60 hover:text-white transition-all cursor-pointer"
+          className="absolute z-30 w-9 h-9 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/60 hover:text-white transition-all cursor-pointer"
+          style={{ top: "calc(1.5rem + env(safe-area-inset-top))", right: "calc(1.5rem + env(safe-area-inset-right))" }}
           aria-label={isMuted ? "Activar música" : "Silenciar música"}
         >
           {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
@@ -177,12 +226,13 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               exit={{ opacity: 0, y: -10, filter: "blur(8px)" }}
               transition={{ delay: 0.3, duration: 1, ease: [0.16, 1, 0.3, 1] as const }}
-              className="absolute top-8 md:top-12 inset-x-0 z-20 flex flex-col items-center text-center px-6 pointer-events-none"
+              className="absolute inset-x-0 z-20 flex flex-col items-center text-center px-6 pointer-events-none"
+              style={{ top: "calc(2rem + env(safe-area-inset-top))" }}
             >
               <p className="text-xs md:text-sm font-light text-[#d4a373] tracking-[0.35em] uppercase mb-2">
                 {intro.preTitle}
               </p>
-              <h1 className="text-xl md:text-2xl lg:text-3xl font-extralight text-white/95 tracking-wide drop-shadow-md">
+              <h1 className="text-xl md:text-2xl lg:text-3xl font-extralight text-white/95 tracking-wide drop-shadow-md [text-shadow:0_4px_20px_rgba(0,0,0,0.8)]">
                 {intro.title}
               </h1>
             </motion.div>
@@ -193,7 +243,8 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               exit={{ opacity: 0, y: 10, filter: "blur(8px)" }}
               transition={{ delay: 1.1, duration: 1, ease: [0.16, 1, 0.3, 1] as const }}
-              className="absolute bottom-10 md:bottom-12 inset-x-0 z-20 flex flex-col items-center text-center px-6 pointer-events-none"
+              className="absolute inset-x-0 z-20 flex flex-col items-center text-center px-6 pointer-events-none"
+              style={{ bottom: "calc(2.5rem + env(safe-area-inset-bottom))" }}
             >
               <motion.div
                 animate={{
@@ -208,7 +259,7 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
                 className="flex flex-col items-center"
               >
                 <div className="w-1.5 h-1.5 rounded-full bg-[#d4a373] mb-2.5 shadow-[0_0_8px_rgba(212,163,115,0.8)]" />
-                <p className="text-base md:text-lg font-light text-white tracking-wide mb-1 drop-shadow-md">
+                <p className="text-base md:text-lg font-light text-white tracking-wide mb-1 drop-shadow-md [text-shadow:0_4px_16px_rgba(0,0,0,0.8)]">
                   {intro.hint}
                 </p>
                 <p className="text-xs md:text-sm font-extralight text-white/60 tracking-widest">
@@ -237,31 +288,37 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
           filter: isFinaleActive && showFinaleCard ? "brightness(0.65) contrast(1.05)" : "brightness(1) contrast(1)",
         }}
         transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] as const }}
-        className="relative aspect-[9/16] h-full max-h-full max-w-full flex items-center justify-center select-none"
+        className="relative flex items-center justify-center w-full h-full select-none touch-manipulation bg-[#1a1a1a]/40"
       >
-        <img
-          src={image}
-          alt="Ramo de flores"
-          className="w-full h-full object-cover select-none pointer-events-none"
-          draggable={false}
-        />
-
-        {/* Zonas interactivas con animación armónica en estado final */}
-        <div
-          className={`absolute inset-0 transition-opacity duration-300 ${
-            activeFlower || (isFinaleActive && showFinaleCard) ? "pointer-events-none" : "pointer-events-auto"
-          }`}
+        <div 
+          className="relative max-w-full max-h-[100dvh] flex items-center justify-center cursor-crosshair"
+          onClick={handleContainerClick}
         >
-          {memories.map((flower) => (
-            <FlowerZone
-              key={flower.id}
-              flower={flower}
-              isDiscovered={discoveredIds.has(flower.id)}
-              isCurrentlyTapped={tappedFlowerId === flower.id}
-              isFinale={isFinaleActive}
-              onTap={handleFlowerTap}
-            />
-          ))}
+          <img
+            src={image}
+            alt="Ramo de flores"
+            className="w-auto h-auto max-w-full max-h-[100dvh] object-contain pointer-events-none"
+            draggable={false}
+            fetchPriority="high"
+            loading="eager"
+          />
+
+          <div
+            className={`absolute inset-0 transition-opacity duration-300 ${
+              activeFlower || (isFinaleActive && showFinaleCard) ? "pointer-events-none" : "pointer-events-auto"
+            }`}
+          >
+            {memories.map((flower) => (
+              <FlowerZone
+                key={flower.id}
+                flower={flower}
+                isDiscovered={discoveredIds.has(flower.id)}
+                isCurrentlyTapped={tappedFlowerId === flower.id}
+                isFinale={isFinaleActive}
+                onTap={handleFlowerTap}
+              />
+            ))}
+          </div>
         </div>
       </motion.div>
 
@@ -292,7 +349,8 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10, filter: "blur(6px)" }}
             transition={{ duration: 0.5 }}
-            className="absolute bottom-4 right-4 z-20 flex items-center gap-2 bg-black/45 backdrop-blur-xl px-3.5 py-1.5 rounded-full border border-white/10 shadow-lg select-none"
+            className="absolute z-20 flex items-center gap-2 bg-black/45 backdrop-blur-xl px-3.5 py-1.5 rounded-full border border-white/10 shadow-lg select-none"
+            style={{ bottom: "calc(1rem + env(safe-area-inset-bottom))", right: "calc(1rem + env(safe-area-inset-right))" }}
           >
             <span className="w-1.5 h-1.5 rounded-full bg-[#d4a373] animate-pulse" />
             <div className="flex items-center text-[11px] font-light text-white/60 tracking-wider">
@@ -400,7 +458,8 @@ export function BouquetView({ onAllDiscovered }: BouquetViewProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.4 }}
-            className="absolute bottom-6 inset-x-0 z-30 flex justify-center pointer-events-auto"
+            className="absolute inset-x-0 z-30 flex justify-center pointer-events-auto"
+            style={{ bottom: "calc(1.5rem + env(safe-area-inset-bottom))" }}
           >
             <button
               type="button"

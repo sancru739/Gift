@@ -1,5 +1,5 @@
 import { memo } from "react"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import type { FlowerMemory } from "@/data/memoriesData"
 
 interface FlowerZoneProps {
@@ -36,7 +36,7 @@ export const FlowerZone = memo(function FlowerZone({
   return (
     <button
       type="button"
-      className="absolute cursor-pointer rounded-full select-none outline-none focus:outline-none -webkit-tap-highlight-color-transparent active:scale-95 transition-transform duration-150 min-w-[44px] min-h-[44px]"
+      className="absolute cursor-pointer rounded-full select-none outline-none focus:outline-none -webkit-tap-highlight-color-transparent active:scale-95 transition-transform duration-150"
       style={{
         left: `${x}%`,
         top: `${y}%`,
@@ -55,42 +55,50 @@ export const FlowerZone = memo(function FlowerZone({
         En el estado final (isFinale), todas las flores realizan una sutil
         animación armónica conjunta de respiración de luz cálida.
       */}
-      {isDiscovered && !isCurrentlyTapped && (
+      {!isCurrentlyTapped && (
         <motion.span
-          initial={{ scale: 0, opacity: 0 }}
+          initial={isDiscovered ? { scale: 0, opacity: 0 } : false}
           animate={
             isFinale
-              ? {
-                  scale: [0.9, 1.4, 0.9],
-                  opacity: [0.45, 0.9, 0.45],
-                }
-              : {
-                  scale: [0.85, 1.15, 0.85],
-                  opacity: [0.35, 0.7, 0.35],
-                }
+              ? { scale: [0.9, 1.4, 0.9], opacity: [0.45, 0.9, 0.45] }
+              : isDiscovered
+                ? { scale: [0.85, 1.15, 0.85], opacity: [0.35, 0.7, 0.35] }
+                : { scale: 1, opacity: 1 }
           }
           transition={{
             duration: isFinale ? 2.8 : 3.8,
-            repeat: Infinity,
+            repeat: isDiscovered || isFinale ? Infinity : 0,
             ease: "easeInOut",
             delay: isFinale ? (x * 0.02) % 1.5 : (x * 0.05) % 2,
           }}
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center"
         >
-          <span
-            className={`rounded-full transition-all duration-700 ${
-              isFinale
-                ? "w-2 h-2 bg-[#fef08a] shadow-[0_0_12px_3px_rgba(254,240,138,0.7)]"
-                : "w-1.5 h-1.5 bg-[#fef08a] shadow-[0_0_8px_2px_rgba(254,240,138,0.5)]"
-            }`}
-          />
+          <span className="relative flex items-center justify-center transition-all duration-1000 opacity-100 scale-100">
+            <span
+              className={`rounded-full transition-all duration-700 ${
+                isFinale
+                  ? "w-2 h-2 bg-white/90 shadow-[0_0_14px_4px_rgba(212,163,115,0.7)]"
+                  : isDiscovered
+                    ? "w-1.5 h-1.5 bg-white/80 shadow-[0_0_10px_3px_rgba(212,163,115,0.5)]"
+                    : "w-4 h-4 border-2 border-white/80 bg-white/20 backdrop-blur-md shadow-[0_0_12px_rgba(255,255,255,0.3)]"
+              }`}
+            />
+          </span>
         </motion.span>
       )}
 
-      {/* Micro-animación de halo al recibir tap */}
-      {isCurrentlyTapped && (
-        <span className="absolute inset-0 rounded-full animate-ping pointer-events-none opacity-40 bg-[radial-gradient(circle,_rgba(254,240,138,0.8)_0%,_rgba(212,163,115,0.4)_50%,_transparent_75%)]" />
-      )}
+      {/* Micro-animación de halo al recibir tap (Ripple orgánico) */}
+      <AnimatePresence>
+        {isCurrentlyTapped && (
+          <motion.span
+            initial={{ scale: 0.6, opacity: 0.9 }}
+            animate={{ scale: 2.2, opacity: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.75, ease: "easeOut" }}
+            className="absolute inset-0 rounded-full pointer-events-none bg-[radial-gradient(circle,_rgba(212,163,115,0.9)_0%,_rgba(212,163,115,0.4)_50%,_transparent_75%)]"
+          />
+        )}
+      </AnimatePresence>
     </button>
   )
 })

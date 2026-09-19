@@ -75,13 +75,13 @@ export default function WelcomeLetter() {
 
               <div className="space-y-6 text-lg font-light leading-relaxed text-[#4A4744] mb-12 max-w-lg">
                 <p>
-                  Quizá es un regalo muy raro, no sé si tan de tu gusto, pero es una mezcla de lo que nos gusta a los dos.
+                  Bienvenida a nuestro rinconcito especial.
                 </p>
                 <p>
-                  Quise hacer esto para poder tener en un lugar muchas cosas nuestras, recordarnos lo que venimos construyendo juntos y seguir avanzando.
+                  Quise hacer esto para poder tener en un lugar muchas cosas nuestras, recordar lo que venimos construyendo juntos y seguir avanzando.
                 </p>
                 <p>
-                  Espero que te guste y puedas ver todo lo que preparé para vos, cualquier sugerencia es bienvenida.
+                  Espero que te guste y puedas ver todo lo que preparé para vos.
                 </p>
                 <p className="pt-6 font-heading italic text-xl text-[#D4A373]">
                   Te amo con todo mi corazón, tu pipu.
@@ -94,7 +94,7 @@ export default function WelcomeLetter() {
                 onClick={handleContinue}
                 className="px-10 py-4 bg-[#2C2A29] text-[#FDFBF7] rounded-full font-medium tracking-wide uppercase text-sm hover:bg-[#D4A373] transition-colors duration-500 shadow-xl"
               >
-                Abrir Regalo
+                Entrar
               </motion.button>
               
               <p className="text-xs text-black/30 mt-6 tracking-widest uppercase">

@@ -8,14 +8,23 @@ export default function CountdownPage() {
   const [isZero, setIsZero] = useState(false)
   const { motivationalMessage } = SITE_CONTENT.countdown
 
+  const target1 = new Date(SITE_CONTENT.countdown.targetDate).getTime()
+  const target2 = SITE_CONTENT.countdown.nextTargetDate 
+    ? new Date(SITE_CONTENT.countdown.nextTargetDate).getTime() 
+    : target1
+
+  const activeTarget = new Date().getTime() >= target1 ? target2 : target1
+  const activeTargetString = new Date().getTime() >= target1 
+    ? SITE_CONTENT.countdown.nextTargetDate 
+    : SITE_CONTENT.countdown.targetDate
+
   // Check immediately on mount if date is already passed
   useEffect(() => {
-    const target = new Date(SITE_CONTENT.countdown.targetDate).getTime()
-    if (new Date().getTime() >= target) {
+    if (new Date().getTime() >= activeTarget) {
       setIsZero(true)
       fireConfetti()
     }
-  }, [])
+  }, [activeTarget])
 
   const handleComplete = () => {
     setIsZero(true)
@@ -94,7 +103,7 @@ export default function CountdownPage() {
 
               <div className="w-full max-w-4xl mx-auto mb-16">
                 <Countdown 
-                  targetDate={SITE_CONTENT.countdown.targetDate}
+                  targetDate={activeTargetString}
                   onComplete={handleComplete}
                 />
               </div>

@@ -34,6 +34,7 @@ const Details = lazyWithRetry(() => import("@/pages/Details"))
 const CountdownPage = lazyWithRetry(() => import("@/pages/CountdownPage"))
 const MusicPage = lazyWithRetry(() => import("@/pages/MusicPage"))
 const GiftPage = lazyWithRetry(() => import("@/pages/GiftPage"))
+const VideoPage = lazyWithRetry(() => import("@/pages/VideoPage"))
 
 export function App() {
   const location = useLocation()
@@ -51,6 +52,7 @@ export function App() {
           {giftConfig.enabled && (
             <Route path="gift" element={<GiftPage />} />
           )}
+          <Route path="video" element={<VideoPage />} />
         </Route>
       </Routes>
     </Suspense>

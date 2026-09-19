@@ -12,6 +12,7 @@ const BASE_NAV_LINKS = [
   { href: "/dreams", label: "Sueños" },
   { href: "/detalles", label: "Detalles" },
   { href: "/countdown", label: "Cuenta Regresiva" },
+  { href: "/video", label: "Recuerdo Octubre" },
 ]
 
 const NAV_LINKS = giftConfig.enabled 

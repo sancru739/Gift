@@ -12,10 +12,9 @@ export function MemoryModal({ flower, onClose }: MemoryModalProps) {
   // Lock body scroll on mobile/desktop while open
   useEffect(() => {
     if (flower) {
-      const originalOverflow = document.body.style.overflow
       document.body.style.overflow = "hidden"
       return () => {
-        document.body.style.overflow = originalOverflow
+        document.body.style.overflow = ""
       }
     }
   }, [flower])
@@ -52,16 +51,30 @@ export function MemoryModal({ flower, onClose }: MemoryModalProps) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 40, scale: 0.96 }}
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] as const }}
-            className="relative z-50 w-full max-w-lg mx-3 mb-3 md:mb-0 md:mx-auto max-h-[85vh] flex flex-col bg-[#121212]/95 border border-white/15 backdrop-blur-2xl rounded-3xl shadow-[0_20px_70px_rgba(0,0,0,0.8)] overflow-hidden"
+            drag="y"
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={0.4}
+            onDragEnd={(_, info) => {
+              if (info.offset.y > 100 || info.velocity.y > 500) {
+                onClose();
+              }
+            }}
+            className="relative z-50 w-full max-w-lg mx-3 mb-3 md:mb-0 md:mx-auto max-h-[85vh] flex flex-col bg-black/60 border border-white/10 backdrop-blur-2xl rounded-3xl shadow-[0_20px_70px_rgba(0,0,0,0.8)] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
             aria-labelledby="memory-title"
           >
+            {/* Drag Handle (Pill) para mobile */}
+            <div className="w-full flex justify-center pt-3 pb-1 md:hidden touch-none shrink-0 cursor-grab active:cursor-grabbing">
+              <div className="w-10 h-1.5 bg-white/20 rounded-full" />
+            </div>
+
             {/* Close Button — Large touch target for mobile (min 44x44px) */}
             <button
               type="button"
               onClick={onClose}
+              autoFocus
               className="absolute top-4 right-4 z-20 w-11 h-11 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-95 text-white/70 hover:text-white transition-all border border-white/10"
               aria-label="Cerrar recuerdo"
             >
@@ -69,10 +82,13 @@ export function MemoryModal({ flower, onClose }: MemoryModalProps) {
             </button>
 
             {/* Scrollable container for memory content */}
-            <div className="overflow-y-auto overscroll-contain flex-1">
+            <div 
+              className="overflow-y-auto overscroll-contain flex-1"
+              onPointerDown={(e) => e.stopPropagation()}
+            >
               {/* Optional Photo */}
               {flower.image && (
-                <div className="relative w-full h-52 md:h-60 overflow-hidden bg-black/40">
+                <div className="relative w-full h-40 sm:h-52 md:h-60 shrink-0 overflow-hidden bg-black/40">
                   <img
                     src={flower.image}
                     alt={flower.title}
@@ -83,7 +99,10 @@ export function MemoryModal({ flower, onClose }: MemoryModalProps) {
               )}
 
               {/* Memory content details */}
-              <div className="p-6 md:p-8">
+              <div 
+                className="p-6 md:p-8"
+                style={{ paddingBottom: "calc(2rem + env(safe-area-inset-bottom))" }}
+              >
                 {/* Flower identifier badge */}
                 <div className="flex items-center gap-2 mb-3">
                   <span className="w-2 h-2 rounded-full bg-[#d4a373] animate-pulse" />

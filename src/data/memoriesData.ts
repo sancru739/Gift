@@ -58,7 +58,7 @@ export interface BouquetConfig {
 
 export const memoriesData: BouquetConfig = {
   // Imagen principal del ramo (fotorrealista, formato vertical 9:16)
-  image: import.meta.env.BASE_URL + "images/bouquet.jpg",
+  image: import.meta.env.BASE_URL + "images/bouquet.webp",
 
   // Textos de introducción (breves, poéticos y sutiles)
   intro: {
